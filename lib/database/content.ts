@@ -80,12 +80,15 @@ export async function createDoc(name: CollectionName, data: Record<string, unkno
   const existing = await adminList(name);
   const orders = existing.map((d) => d.order ?? 0);
   const order = typeof data.order === "number" ? data.order : newFirst.has(name) ? Math.min(0, ...orders) - 1 : Math.max(0, ...orders) + 1;
+  const now = new Date().toISOString();
   const doc = {
     ...data,
     id: `${name.slice(0, 3)}-${randomUUID().slice(0, 12)}`,
     order,
-    ...(name === "posters" ? { downloads: 0, createdAt: new Date().toISOString() } : {}),
-  } as AnyDoc;
+    createdAt: now,
+    updatedAt: now,
+    ...(name === "posters" ? { downloads: 0 } : {}),
+  } as unknown as AnyDoc;
   await getStore().put(name, doc.id, doc);
   return doc;
 }
@@ -94,7 +97,13 @@ export async function updateDoc(name: CollectionName, id: string, data: Record<s
   await adminList(name);
   const current = (await getStore().get(name, id)) as AnyDoc | null;
   if (!current) return null;
-  const doc = { ...current, ...data, id, order: typeof data.order === "number" ? data.order : current.order } as AnyDoc;
+  const doc = {
+    ...current,
+    ...data,
+    id,
+    order: typeof data.order === "number" ? data.order : current.order,
+    updatedAt: new Date().toISOString(),
+  } as AnyDoc;
   await getStore().put(name, id, doc);
   return doc;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { AdminUiProvider } from "@/components/admin/ui";
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 
 interface AdminContextValue {
@@ -51,5 +52,9 @@ export function AdminProvider({ email, csrf, cloud, children }: { email: string;
     [csrf, router],
   );
   const value = useMemo(() => ({ email, cloud, api }), [email, cloud, api]);
-  return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
+  return (
+    <AdminContext.Provider value={value}>
+      <AdminUiProvider>{children}</AdminUiProvider>
+    </AdminContext.Provider>
+  );
 }

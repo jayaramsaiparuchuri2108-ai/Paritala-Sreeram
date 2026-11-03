@@ -292,6 +292,7 @@ const en = {
     saving: "Saving…",
     saved: "Saved",
     cancel: "Cancel",
+    confirm: "Confirm",
     confirmDelete: "Delete this item permanently?",
     published: "Published",
     draft: "Draft",

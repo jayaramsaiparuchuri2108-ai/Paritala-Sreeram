@@ -45,10 +45,19 @@ export interface ResourceDef {
   titleField: string;
   subtitleField?: string;
   imageField?: string;
-  /** Show the multi-photograph uploader above the list (gallery). */
-  bulkUpload?: boolean;
   reorderable: boolean;
   defaults: Record<string, unknown>;
+}
+
+export type FieldGroup = "content" | "media" | "details" | "publishing";
+export const FIELD_GROUPS: FieldGroup[] = ["content", "media", "details", "publishing"];
+
+/** Which block of the editor a field belongs to (the editor shows the blocks in this order). */
+export function fieldGroup(f: FieldDef): FieldGroup {
+  if (f.type === "image" || f.type === "images" || f.name === "alt" || f.name === "imageAlt") return "media";
+  if (["published", "permission", "allowDownload", "featured"].includes(f.name)) return "publishing";
+  if (["date", "year", "location", "category", "sourceName", "sourceUrl", "sourceIds", "credit", "tags", "party", "key"].includes(f.name)) return "details";
+  return "content";
 }
 
 const L = (en: string, te: string): Bi => ({ en, te });
@@ -220,7 +229,6 @@ export const resources: ResourceDef[] = [
     titleField: "title",
     subtitleField: "category",
     imageField: "image",
-    bulkUpload: true,
     reorderable: true,
     defaults: { published: false, category: "recent", permission: "pending", allowDownload: false, featured: false },
     fields: [

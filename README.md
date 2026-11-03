@@ -27,6 +27,18 @@ Home page order: black hero → editorial intro → alternating image/text split
 
 **Areas of Focus** (Admin → Areas of focus) are neutral informational categories with an optional description. Add a description only once it is approved; do not use them for promises or claims of completed work.
 
+## Admin panel
+
+The admin shares the public site's visual identity (black / white / political yellow, Playfair headings, square corners, thin borders) and is built from one small kit in `components/admin/ui.tsx` (buttons, cards, badges, skeletons, empty states, accessible modal, toasts and a promise-based confirm dialog).
+
+- **Shell** — collapsible sidebar (state remembered in the browser), grouped navigation that lists only sections that exist (Overview · Website content · Media · Settings), administrator card with sign-out, slide-out drawer on mobile, skip link, breadcrumb title that follows the language switcher. The shell lives in `app/admin/(panel)/layout.tsx`, so the sidebar persists between pages.
+- **Dashboard** — welcome and administrator card, quick actions, content / published / draft counts, latest photographs, pending gallery approvals (permission not yet authorised), recent website activity and a draft-vs-published bar per section. Everything comes from `/api/admin/stats`; nothing is sample data, and empty sections show instructions instead. Items created or edited from now on carry server-stamped `createdAt` / `updatedAt`, which is what feeds *Recent activity*; older items simply have no time shown.
+- **Content editors** — one editor (`ItemEditor`) for every section: fields grouped into Content / Images / Details and sources / Publishing, EN + TE side by side or one language at a time, drag-and-drop image upload, labels with helper text, inline validation, **Save draft / Publish / Update / Cancel**, an unsaved-changes guard and confirmation before every delete. Lists have search, a published/draft filter, reorder arrows and loading skeletons.
+- **Photo gallery** — `GalleryManager`: drag-and-drop multi-upload with per-file progress and retry, large thumbnail grid, search, category and status filters (Live / Drafts / Awaiting permission), bulk select with publish / unpublish / delete, drag-to-reorder (when no filter is active), an edit modal with a live "ready to go live?" checklist, and a preview that uses the public viewer.
+- **Poster designer** — three-column workspace (templates, background and layers on the left, large canvas with add-tools in the middle, properties and save on the right), photos chosen from authorised gallery photographs, keyboard nudging on the canvas.
+
+The redesign changed no API route, schema, storage or authentication behaviour. The only server additions are the `createdAt` / `updatedAt` stamps and extra fields on `/api/admin/stats` (the existing fields are unchanged).
+
 ## Photo gallery
 
 The Gallery page is a real photo archive (no Instagram embeds): masonry grid, category chips with counts, search, lazy-loaded responsive images, and the site's own lightbox with previous/next (buttons, arrow keys, swipe), caption, verified event date, credit, an optional small "Original post" link, share buttons and — only when the admin allows it — a download button. Shared links like `/gallery?photo=<id>` open the photograph directly.

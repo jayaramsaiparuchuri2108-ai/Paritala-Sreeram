@@ -175,3 +175,9 @@ html[lang="te"] .uppercase {
   }
   .zoom-img:hover img { transform: none; }
 }
+
+/* Admin: indeterminate upload bar. */
+@keyframes ps-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}

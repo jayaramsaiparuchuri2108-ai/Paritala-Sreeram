@@ -50,7 +50,7 @@ export function Lightbox({ open, onClose, children, label, onPrev, onNext, wide 
           role="dialog"
           aria-modal="true"
           aria-label={label}
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-ink/90 p-3 backdrop-blur-sm md:p-8"
+          className="fixed inset-0 z-[130] flex items-center justify-center bg-ink/90 p-3 backdrop-blur-sm md:p-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

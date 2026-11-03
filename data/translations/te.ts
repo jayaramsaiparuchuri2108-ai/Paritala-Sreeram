@@ -295,6 +295,7 @@ const te: Dict = {
     saving: "సేవ్ అవుతోంది…",
     saved: "సేవ్ అయింది",
     cancel: "రద్దు",
+    confirm: "నిర్ధారించండి",
     confirmDelete: "ఈ అంశాన్ని శాశ్వతంగా తొలగించాలా?",
     published: "ప్రచురితం",
     draft: "డ్రాఫ్ట్",

@@ -301,6 +301,27 @@ describe("api", () => {
       assert.ok("postersByCategory" in stats);
     });
 
+    test("stats: dashboard summary uses real data, timestamps are server-owned", async (t) => {
+      if (!ready(t)) return;
+      const stats = await (await fetch(`${BASE}/api/admin/stats`, { headers: auth() })).json();
+      for (const k of ["total", "live", "drafts", "awaitingPermission", "held", "featured"]) assert.equal(typeof stats.gallery[k], "number", `gallery.${k}`);
+      assert.ok(Array.isArray(stats.gallery.recent) && Array.isArray(stats.gallery.pending) && Array.isArray(stats.recent));
+
+      const make = await fetch(`${BASE}/api/admin/c/instagram`, { method: "POST", headers: auth({ "Content-Type": "application/json" }), body: JSON.stringify({ url: "https://www.instagram.com/reel/ZZstats1/", published: false, createdAt: "2001-01-01T00:00:00.000Z" }) });
+      assert.equal(make.status, 201);
+      const { item } = await make.json();
+      try {
+        assert.ok(item.createdAt && item.createdAt > "2020", "createdAt is stamped by the server, not taken from the client");
+        const after = await (await fetch(`${BASE}/api/admin/stats`, { headers: auth() })).json();
+        const entry = after.recent.find((r: { id: string }) => r.id === item.id);
+        assert.ok(entry, "new item appears in recent activity");
+        assert.equal(entry.collection, "instagram");
+        assert.equal(entry.created, true);
+      } finally {
+        await fetch(`${BASE}/api/admin/c/instagram/${item.id}`, { method: "DELETE", headers: auth() });
+      }
+    });
+
     test("logout invalidates the server-side session", async (t) => {
       if (!ready(t)) return;
       const out = await fetch(`${BASE}/api/admin/logout`, { method: "POST", headers: auth() });

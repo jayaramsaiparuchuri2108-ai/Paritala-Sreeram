@@ -8,6 +8,9 @@ interface Base {
   id: string;
   published: boolean;
   order: number;
+  /** Stamped by the server; items that predate the stamps simply lack them. */
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type ActivityCategory =
