@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ACTIVITY_CATEGORIES } from "@/types";
+import { ACTIVITY_CATEGORIES, GALLERY_CATEGORIES } from "@/types";
 import { isAllowedAssetUrl, isHttpsUrl, normalizeInstagramUrl, parseYoutubeId } from "./urls";
 
 const text = (max: number) => z.string().trim().max(max);
@@ -79,14 +79,29 @@ export const collectionSchemas = {
     alt: biSchema(300).optional(),
     tags: z.array(text(30)).max(15).default([]),
   }),
-  gallery: z.object({
-    ...common,
-    title: biRequired(160),
-    category: text(60).min(1),
-    image: assetUrl,
-    alt: biRequired(300),
-    credit: text(160),
-  }),
+  gallery: z
+    .object({
+      ...common,
+      title: biRequired(160),
+      caption: biSchema(800).optional(),
+      category: z.enum(GALLERY_CATEGORIES),
+      image: assetUrl,
+      width: z.number().int().min(1).max(20000).optional(),
+      height: z.number().int().min(1).max(20000).optional(),
+      alt: biSchema(300),
+      date: isoDate,
+      sourceUrl: optionalHttps,
+      credit: text(160).default(""),
+      permission: z.enum(["authorised", "pending"]).default("pending"),
+      allowDownload: z.boolean().default(false),
+      featured: z.boolean().default(false),
+    })
+    .superRefine((v, ctx) => {
+      // A photograph can be saved as a draft at any time, but only goes public once it is cleared and described.
+      if (!v.published) return;
+      if (v.permission !== "authorised") ctx.addIssue({ code: "custom", path: ["permission"], message: "Only authorised photographs can be published" });
+      if (!v.alt.en && !v.alt.te) ctx.addIssue({ code: "custom", path: ["alt"], message: "Add an image description (alt text) before publishing" });
+    }),
   instagram: z.object({
     ...common,
     url: z

@@ -29,7 +29,7 @@ import { useLang } from "@/components/shared/Providers";
 import { BLACK, builtInTemplates, POSTER_FONTS, POSTER_H, POSTER_W, YELLOW } from "@/data/poster-templates";
 import { pick } from "@/lib/i18n";
 import { hitTest, LOGO_SRC, renderPoster, type ImageMap, type PosterState } from "@/lib/poster/render";
-import type { Bi, PosterCategory, PosterLayer, PosterTemplate, ShapeLayer, TextLayer } from "@/types";
+import type { Bi, GalleryPhoto, PosterCategory, PosterLayer, PosterTemplate, ShapeLayer, TextLayer } from "@/types";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
@@ -72,6 +72,7 @@ export function PosterEditor() {
   const drag = useRef<{ id: string; dx: number; dy: number } | null>(null);
 
   const [customTemplates, setCustomTemplates] = useState<PosterTemplate[]>([]);
+  const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([]);
   const [categories, setCategories] = useState<PosterCategory[]>([]);
   const [state, setState] = useState<PosterState>(() => fromTemplate(builtInTemplates[0]));
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -87,6 +88,7 @@ export function PosterEditor() {
   // ------------------------------------------------------------ data
   useEffect(() => {
     api<{ items: PosterTemplate[] }>("/c/posterTemplates").then((r) => setCustomTemplates(r.items)).catch(() => undefined);
+    api<{ items: GalleryPhoto[] }>("/c/gallery").then((r) => setGalleryPhotos(r.items.filter((p) => p.permission === "authorised"))).catch(() => undefined);
     api<{ items: PosterCategory[] }>("/c/posterCategories")
       .then((r) => {
         setCategories(r.items);
@@ -99,6 +101,8 @@ export function PosterEditor() {
   const ensureImage = useCallback((src: string) => {
     if (!src || images.current.has(src)) return;
     const img = new window.Image();
+    // Gallery photographs may live on another origin (Vercel Blob); CORS keeps the canvas exportable.
+    if (/^https?:/i.test(src)) img.crossOrigin = "anonymous";
     img.onload = () => {
       images.current.set(src, img);
       setTick((n) => n + 1);
@@ -450,6 +454,19 @@ export function PosterEditor() {
                     <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => e.target.files?.[0] && uploadInto(e.target.files[0], (src) => patch(selected.id, { src }))} />
                   </label>
                   <p className="text-[11px] text-stone">{t.editor.photoRights}</p>
+                  {galleryPhotos.length > 0 && (
+                    <div>
+                      <p className="mb-1 text-[11px] font-bold">{t.editor.fromGallery}</p>
+                      <div className="flex flex-wrap gap-1">
+                        {galleryPhotos.slice(0, 12).map((p) => (
+                          <button key={p.id} type="button" title={pick(p.title, lang)} onClick={() => patch(selected.id, { src: p.image })} className={`overflow-hidden rounded-md border-2 ${selected.src === p.image ? "border-ink ring-2 ring-brand" : "border-ink/40"}`}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={p.image} alt={pick(p.alt, lang) || pick(p.title, lang)} className="h-12 w-12 object-cover" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 gap-1 text-xs font-bold">
                     {(["cover", "contain"] as const).map((f) => (
                       <button key={f} onClick={() => patch(selected.id, { fit: f })} className={`rounded-md border-2 border-ink px-2 py-1.5 ${selected.fit === f ? "bg-brand" : ""}`}>{f === "cover" ? t.editor.fitCover : t.editor.fitContain}</button>

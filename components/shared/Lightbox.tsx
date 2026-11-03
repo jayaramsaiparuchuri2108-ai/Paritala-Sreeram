@@ -12,11 +12,19 @@ interface LightboxProps {
   label: string;
   onPrev?: () => void;
   onNext?: () => void;
+  /** Wider panel for photograph viewers (image + details side by side). */
+  wide?: boolean;
 }
 
-export function Lightbox({ open, onClose, children, label, onPrev, onNext }: LightboxProps) {
+export function Lightbox({ open, onClose, children, label, onPrev, onNext, wide }: LightboxProps) {
   const { t } = useLang();
   const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Handlers are read through a ref so stepping through photographs doesn't re-run the effect (and re-focus Close).
+  const handlers = useRef({ onClose, onPrev, onNext });
+  useEffect(() => {
+    handlers.current = { onClose, onPrev, onNext };
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -24,16 +32,16 @@ export function Lightbox({ open, onClose, children, label, onPrev, onNext }: Lig
     document.body.style.overflow = "hidden";
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") onPrev?.();
-      if (e.key === "ArrowRight") onNext?.();
+      if (e.key === "Escape") handlers.current.onClose();
+      if (e.key === "ArrowLeft") handlers.current.onPrev?.();
+      if (e.key === "ArrowRight") handlers.current.onNext?.();
     };
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKey);
     };
-  }, [open, onClose, onPrev, onNext]);
+  }, [open]);
 
   return (
     <AnimatePresence>
@@ -58,7 +66,7 @@ export function Lightbox({ open, onClose, children, label, onPrev, onNext }: Lig
             <X className="h-5 w-5" />
           </button>
           <motion.div
-            className="max-h-full w-full max-w-5xl overflow-auto bg-paper shadow-2xl"
+            className={`max-h-full w-full overflow-auto bg-paper shadow-2xl ${wide ? "max-w-6xl" : "max-w-5xl"}`}
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 10 }}

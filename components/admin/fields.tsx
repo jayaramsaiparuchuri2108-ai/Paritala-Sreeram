@@ -13,22 +13,40 @@ const input =
 
 export type FormValue = Record<string, unknown>;
 
+export interface UploadResult {
+  url: string;
+  width: number;
+  height: number;
+  duplicate: boolean;
+}
+
 export function ImageUploader({
   value,
   onChange,
+  onUploaded,
   folder = "gallery",
+  category,
+  name,
 }: {
   value: string;
   onChange: (url: string) => void;
+  /** Called with the stored file's details after a successful upload (pixel size, duplicate flag). */
+  onUploaded?: (result: UploadResult) => void;
   folder?: "posters" | "gallery" | "site";
+  /** Gallery category - files are stored in a per-category folder. */
+  category?: string;
+  /** Descriptive base name for the stored file. */
+  name?: string;
 }) {
   const { api } = useAdmin();
   const { t } = useLang();
   const ref = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [note, setNote] = useState("");
 
   async function upload(file: File) {
+    setNote("");
     setError("");
     if (file.size > 8 * 1024 * 1024) return setError("File is larger than 8 MB.");
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return setError("Only JPG, PNG or WebP images are allowed.");
@@ -37,8 +55,12 @@ export function ImageUploader({
       const form = new FormData();
       form.set("file", file);
       form.set("folder", folder);
-      const res = await api<{ url: string }>("/upload", { method: "POST", form });
+      if (category) form.set("category", category);
+      if (name) form.set("name", name);
+      const res = await api<UploadResult>("/upload", { method: "POST", form });
       onChange(res.url);
+      onUploaded?.(res);
+      if (res.duplicate) setNote("This photograph was already uploaded - the existing file was reused.");
     } catch (e) {
       setError(e instanceof ApiError ? e.message : t.admin.error);
     } finally {
@@ -72,6 +94,7 @@ export function ImageUploader({
         <input ref={ref} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
       </div>
       <p className="text-xs text-stone">{t.admin.imageHelp}</p>
+      {note && <p role="status" className="text-xs font-bold text-ink">{note}</p>}
       {error && <p role="alert" className="text-xs font-bold text-red-700">{error}</p>}
     </div>
   );
@@ -102,12 +125,18 @@ export function FieldRenderer({
   onChange,
   categories = [],
   error,
+  siblings,
+  onMeta,
 }: {
   def: FieldDef;
   value: unknown;
   onChange: (v: unknown) => void;
   categories?: PosterCategory[];
   error?: string;
+  /** The whole form, so a field can use related values (e.g. the photo's category and title). */
+  siblings?: FormValue;
+  /** Lets a field set other form values (e.g. the pixel size recorded at upload). */
+  onMeta?: (patch: FormValue) => void;
 }) {
   const { lang, t } = useLang();
   const label = pick(def.label, lang);
@@ -144,7 +173,19 @@ export function FieldRenderer({
       control = <input type="date" className={input} value={((value as string) ?? "").slice(0, 10)} onChange={(e) => onChange(e.target.value)} />;
       break;
     case "image":
-      control = <ImageUploader value={(value as string) ?? ""} onChange={onChange} folder={def.folder} />;
+      control = (
+        <ImageUploader
+          value={(value as string) ?? ""}
+          folder={def.folder}
+          category={def.trackSize ? (siblings?.category as string | undefined) : undefined}
+          name={def.trackSize ? ((siblings?.title as Bi | undefined)?.en || undefined) : undefined}
+          onChange={(url) => {
+            onChange(url);
+            if (!url && def.trackSize) onMeta?.({ width: undefined, height: undefined });
+          }}
+          onUploaded={(r) => def.trackSize && onMeta?.({ width: r.width, height: r.height })}
+        />
+      );
       break;
     case "images": {
       const list = (value as string[]) ?? [];
@@ -179,7 +220,7 @@ export function FieldRenderer({
         <label className="inline-flex cursor-pointer items-center gap-3">
           <input type="checkbox" className="peer sr-only" checked={Boolean(value)} onChange={(e) => onChange(e.target.checked)} />
           <span className="relative h-7 w-12 rounded-full border-2 border-ink bg-white transition peer-checked:bg-brand peer-focus-visible:ring-4 peer-focus-visible:ring-brand after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-ink after:transition peer-checked:after:translate-x-5" />
-          <span className="text-sm font-bold">{value ? t.admin.published : t.admin.draft}</span>
+          <span className="text-sm font-bold">{def.boolLabels ? pick(value ? def.boolLabels.on : def.boolLabels.off, lang) : value ? t.admin.published : t.admin.draft}</span>
         </label>
       );
       break;

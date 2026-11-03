@@ -5,6 +5,7 @@ import {
   seedBio,
   seedElectoral,
   seedFocus,
+  seedGallery,
   seedInstagram,
   seedPosterCategories,
   seedTimeline,
@@ -26,7 +27,7 @@ const seeds: Record<CollectionName, AnyDoc[]> = {
   posterCategories: seedPosterCategories as unknown as AnyDoc[],
   instagram: seedInstagram as unknown as AnyDoc[],
   posters: [],
-  gallery: [],
+  gallery: seedGallery as unknown as AnyDoc[],
   videos: [],
   posterTemplates: [],
 };
@@ -65,7 +66,9 @@ export async function publicList<T = AnyDoc>(name: CollectionName): Promise<T[]>
       console.error(`[content] falling back to seed for "${name}":`, error);
     }
   }
-  return docs.filter((d) => d.published !== false).sort(byOrder) as unknown as T[];
+  // Photographs are public only once they are both published and marked as authorised.
+  const visible = (d: AnyDoc) => d.published !== false && (name !== "gallery" || d.permission === "authorised");
+  return docs.filter(visible).sort(byOrder) as unknown as T[];
 }
 
 export async function publicGet<T = AnyDoc>(name: CollectionName, id: string): Promise<T | null> {
@@ -114,6 +117,19 @@ export async function reorderDocs(name: CollectionName, ids: string[]): Promise<
     if (!doc) continue;
     await store.put(name, id, { ...doc, order: position++ });
   }
+}
+
+/** True while any record still points at this stored image (deduplicated uploads can be shared). */
+export async function isImageInUse(url: string): Promise<boolean> {
+  const store = getStore();
+  for (const name of ["posters", "gallery", "activities", "bio", "updates"] as const) {
+    const docs = await store.list(name);
+    if (docs.some((d) => d.image === url)) return true;
+  }
+  const home = await store.kvGet<{ heroImages?: string[] }>("settings:home");
+  if (home?.heroImages?.includes(url)) return true;
+  const seo = await store.kvGet<{ ogImage?: string }>("settings:seo");
+  return seo?.ogImage === url;
 }
 
 export async function incrementPosterDownloads(id: string): Promise<void> {

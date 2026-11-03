@@ -14,7 +14,7 @@ Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Motion + GSAP · Luci
 | --- | --- |
 | Public | `/`, `/about`, `/activities`, `/posters`, `/posters/[id]`, `/gallery`, `/videos`, `/contact`, `/sources` |
 | SEO | `sitemap.xml`, `robots.txt`, per-page metadata + canonical + Open Graph, JSON-LD (Person), generated OG image |
-| Admin | `/admin` (dashboard), content CRUD for every section, poster designer (`/admin/designer`), gallery + Instagram manager, SEO / social / contact / site settings |
+| Admin | `/admin` (dashboard), content CRUD for every section, poster designer (`/admin/designer`), photo gallery manager (+ legacy Instagram list), SEO / social / contact / site settings |
 | API | `/api/admin/*` (session-protected), `/api/posters/[id]/download` (public) |
 
 Language is a cookie (`ps_lang`); switching never changes the URL or scroll position. All content is stored as `{ en, te }` pairs.
@@ -23,11 +23,21 @@ Language is a cookie (`ps_lang`); switching never changes the URL or scroll posi
 
 The front end follows an editorial, premium-political look: yellow `#FFD600` / black `#080808` / white, serif display headings (Playfair), small letter-spaced uppercase labels, clean sans body, Noto Sans Telugu for Telugu, square corners and thin borders. Colours and fonts are tokens in `styles/globals.css` (`@theme`), so a palette change is a one-file edit. Animation is restrained and respects `prefers-reduced-motion`.
 
-Home page order: black hero → editorial intro → alternating image/text splits (biography, journey, responsibilities, community) → newspaper-style activities and updates → numbered **Areas of Focus** → dark recent-activity gallery with Instagram embeds → yellow "Explore Posters" band → black footer. The community split and videos band only appear when matching content exists.
+Home page order: black hero → editorial intro → alternating image/text splits (biography, journey, responsibilities, community) → newspaper-style activities and updates → numbered **Areas of Focus** → dark recent-activity photo strip → yellow "Explore Posters" band → black footer. The community split and videos band only appear when matching content exists.
 
 **Areas of Focus** (Admin → Areas of focus) are neutral informational categories with an optional description. Add a description only once it is approved; do not use them for promises or claims of completed work.
 
-**Images.** No authorised photographs exist yet, so image slots render a typographic monogram panel instead of a stand-in photo. They fill in automatically when the owner uploads real images: home hero images (Admin → Home page), biography image (Admin → Biography), activity and update images, and the gallery.
+## Photo gallery
+
+The Gallery page is a real photo archive (no Instagram embeds): masonry grid, category chips with counts, search, lazy-loaded responsive images, and the site's own lightbox with previous/next (buttons, arrow keys, swipe), caption, verified event date, credit, an optional small "Original post" link, share buttons and — only when the admin allows it — a download button. Shared links like `/gallery?photo=<id>` open the photograph directly.
+
+**Admin → Photo gallery** can: upload many photographs at once (drag and drop, stored as unpublished drafts awaiting permission), edit EN/TE title, caption and alt text, set category, verified date, original post URL and credit, mark permission (*Pending* / *Authorised*), allow downloads, feature a photograph, reorder, publish/unpublish, preview, edit and delete. A photograph is public only when it is **Published, Authorised and has alt text** — the server enforces this.
+
+**Storage.** Uploads go to Vercel Blob in production (`gallery/<category>/<descriptive-name>-<hash>.<ext>`) and to `.data/uploads` locally. The original file is stored untouched; Next.js serves optimised AVIF/WebP at the right size. Identical bytes are detected by content hash and reused instead of stored twice; a stored file is deleted only when no record uses it any more. Uploads are checked by magic bytes, limited to JPG/PNG/WebP, 8 MB and 12 000 px, and the pixel size is recorded so layouts never shift.
+
+**Slots fill themselves.** Home panels take their own uploaded image if one is set; otherwise they use a photograph from the matching gallery category (Portraits → hero and biography, Political & party activities → journey, Public meetings → roles, Public visits & community → community). The About page uses the first Portraits photograph. The poster designer's photo layer can pick any authorised gallery photograph. Areas with no photograph show a plain typographic panel — never a stand-in image.
+
+**What is still needed.** See `research/photo-collection-checklist.md` (exact photographs and details to supply) and `research/photo-register.md` (what is bundled and its permission status).
 
 ## Local development
 
@@ -96,7 +106,7 @@ Without Upstash configured in production, public pages still render from the bun
 Everything on the site comes from `research/source-registry.json` (sources and dated facts) and is explained in `research/research-report.md`. Nothing was invented. Items that need the owner:
 
 1. **Telugu copy** was written by the build and needs review by a native reader.
-2. **Photographs and videos**: none were published without authorisation. Upload authorised photos (Admin → Gallery, Home → hero image) and videos (Admin → Videos). Instagram posts are shown with Instagram's official embed.
+2. **Photographs and videos**: one official portrait (supplied by the site owner) is bundled; its original post URL, caption, date and written rights confirmation are not recorded yet. All other photographs must be supplied — see `research/photo-collection-checklist.md`. Photographs are never scraped from Instagram/Facebook. Videos: Admin → Videos.
 3. **Trust / community activities**: the owner should supply verified items (Admin → Activities).
 4. **Election row 2026**: shown as "Candidate — result awaited"; update when confirmed.
 5. **Affidavit / personal details** (fact F16) are deliberately not shown — decide whether to disclose.

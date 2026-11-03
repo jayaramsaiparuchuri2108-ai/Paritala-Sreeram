@@ -9,10 +9,11 @@ import { VideoGrid } from "@/components/videos/VideoGrid";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { getSettings, publicList } from "@/lib/database/content";
 import { formatDate, getDict, pick } from "@/lib/i18n";
+import { photoFor } from "@/lib/photos";
 import { getLang } from "@/lib/lang-server";
 import { jsonLd, pageMetadata } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/site-url";
-import type { Activity, BioSection, FocusArea, GalleryPhoto, InstagramPost, Poster, UpdateItem, VideoEntry } from "@/types";
+import type { Activity, BioSection, FocusArea, GalleryPhoto, Poster, UpdateItem, VideoEntry } from "@/types";
 
 export async function generateMetadata() {
   return pageMetadata({ path: "/" });
@@ -23,12 +24,11 @@ const COMMUNITY_CATEGORIES: Activity["category"][] = ["trust", "social", "villag
 export default async function HomePage() {
   const lang = await getLang();
   const t = getDict(lang);
-  const [settings, updates, bio, activities, instagram, videos, posters, focus, photos] = await Promise.all([
+  const [settings, updates, bio, activities, videos, posters, focus, photos] = await Promise.all([
     getSettings(),
     publicList<UpdateItem>("updates"),
     publicList<BioSection>("bio"),
     publicList<Activity>("activities"),
-    publicList<InstagramPost>("instagram"),
     publicList<VideoEntry>("videos"),
     publicList<Poster>("posters"),
     publicList<FocusArea>("focus"),
@@ -43,7 +43,13 @@ export default async function HomePage() {
   const latestPosters = [...posters].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const community = activities.find((a) => COMMUNITY_CATEGORIES.includes(a.category));
 
-  const alt = (b?: BioSection) => (b ? pick(b.imageAlt, lang) || pick(b.title, lang) : "");
+  // Each slot uses its own uploaded image if set; otherwise it takes a photograph from the matching gallery category.
+  const portrait = photoFor(photos, ["portraits"], 1) ?? photoFor(photos, ["portraits"], 0);
+  const journeyPhoto = photoFor(photos, ["political-activities"]);
+  const rolesPhoto = photoFor(photos, ["public-meetings"]);
+  const communityPhoto = photoFor(photos, ["community-visits"]);
+  const heroImages = settings.home.heroImages.length > 0 ? settings.home.heroImages : photos.filter((p) => p.category === "portraits").slice(0, 3).map((p) => p.image);
+  const alt = (b?: BioSection, fallback?: GalleryPhoto) => (b ? pick(b.imageAlt, lang) || pick(b.title, lang) : "") || (fallback ? pick(fallback.alt, lang) : "");
   const personLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -58,7 +64,7 @@ export default async function HomePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(personLd) }} />
-      <Hero name={settings.site.name} designation={settings.site.designation} intro={settings.home.heroIntro} images={settings.home.heroImages} imageAlt={settings.home.heroImageAlt} />
+      <Hero name={settings.site.name} designation={settings.site.designation} intro={settings.home.heroIntro} images={heroImages} imageAlt={settings.home.heroImageAlt} />
 
       <Intro intro={intro} education={section("education")} designation={settings.site.designation} />
 
@@ -69,8 +75,8 @@ export default async function HomePage() {
           eyebrow={t.home.sectionBackground}
           title={pick(background.title, lang)}
           body={[pick(background.body, lang), family ? pick(family.body, lang) : ""].filter(Boolean).join("\n\n")}
-          image={background.image}
-          imageAlt={alt(background)}
+          image={background.image || portrait?.image}
+          imageAlt={background.image ? alt(background) : portrait ? pick(portrait.alt, lang) : alt(background)}
           monogram="PS"
           cta={{ href: "/about", label: t.home.readFullBio }}
         />
@@ -83,8 +89,8 @@ export default async function HomePage() {
           eyebrow={t.home.sectionJourney}
           title={pick(journey.title, lang)}
           body={pick(journey.body, lang)}
-          image={journey.image}
-          imageAlt={alt(journey)}
+          image={journey.image || journeyPhoto?.image}
+          imageAlt={journey.image ? alt(journey) : journeyPhoto ? pick(journeyPhoto.alt, lang) : alt(journey)}
           monogram="TDP"
           cta={{ href: "/about#timeline", label: t.about.timelineTitle }}
         />
@@ -97,8 +103,8 @@ export default async function HomePage() {
           eyebrow={t.home.sectionRoles}
           title={pick(roles.title, lang)}
           body={pick(roles.body, lang)}
-          image={roles.image}
-          imageAlt={alt(roles)}
+          image={roles.image || rolesPhoto?.image}
+          imageAlt={roles.image ? alt(roles) : rolesPhoto ? pick(rolesPhoto.alt, lang) : alt(roles)}
           monogram="DV"
           meta={settings.site.designation[lang]}
         />
@@ -111,8 +117,8 @@ export default async function HomePage() {
           eyebrow={t.home.sectionCommunity}
           title={pick(community.title, lang)}
           body={pick(community.description, lang)}
-          image={community.image}
-          imageAlt={pick(community.imageAlt, lang) || pick(community.title, lang)}
+          image={community.image || communityPhoto?.image}
+          imageAlt={community.image ? pick(community.imageAlt, lang) || pick(community.title, lang) : communityPhoto ? pick(communityPhoto.alt, lang) : pick(community.title, lang)}
           monogram="PS"
           meta={community.date ? formatDate(community.date, lang) : undefined}
           cta={{ href: "/activities", label: t.nav.activities }}
@@ -121,7 +127,7 @@ export default async function HomePage() {
 
       <NewsSection activities={activities} updates={updates} />
       <FocusAreas areas={focus} />
-      <GalleryStrip photos={photos} instagram={instagram} />
+      <GalleryStrip photos={photos} instagramUrl={settings.social.instagram} />
 
       {videos.length > 0 && (
         <section className="bg-white py-20 md:py-28">

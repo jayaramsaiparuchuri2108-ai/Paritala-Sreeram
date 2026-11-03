@@ -1,13 +1,15 @@
-﻿import { Reveal } from "@/components/animations/Reveal";
+﻿import Image from "next/image";
+import { Reveal } from "@/components/animations/Reveal";
 import { Timeline } from "@/components/about/Timeline";
 import { PageHero } from "@/components/shared/PageHero";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SourceChips } from "@/components/shared/SourceChips";
-import { publicList } from "@/lib/database/content";
+import { getSettings, publicList } from "@/lib/database/content";
 import { getDict, pick } from "@/lib/i18n";
 import { getLang } from "@/lib/lang-server";
+import { photoFor, ratioOf } from "@/lib/photos";
 import { pageMetadata } from "@/lib/seo";
-import type { BioSection, ElectoralRow, TimelineEvent } from "@/types";
+import type { BioSection, ElectoralRow, GalleryPhoto, TimelineEvent } from "@/types";
 
 export async function generateMetadata() {
   return pageMetadata({ path: "/about", navKey: "about" });
@@ -16,15 +18,50 @@ export async function generateMetadata() {
 export default async function AboutPage() {
   const lang = await getLang();
   const t = getDict(lang);
-  const [bio, timeline, electoral] = await Promise.all([
+  const [bio, timeline, electoral, photos, settings] = await Promise.all([
     publicList<BioSection>("bio"),
     publicList<TimelineEvent>("timeline"),
     publicList<ElectoralRow>("electoral"),
+    publicList<GalleryPhoto>("gallery"),
+    getSettings(),
   ]);
+  const portrait = photoFor(photos, ["portraits"]);
 
   return (
     <>
       <PageHero title={t.about.title} lead={t.about.lead} eyebrow={t.brand.name} />
+
+      {portrait && (
+        <section className="container-x pt-16 md:pt-24">
+          <Reveal>
+            <figure className="grid items-end gap-8 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] md:gap-14">
+              <div className="relative">
+                <div aria-hidden className="absolute -bottom-3 -right-3 h-3/4 w-3/4 bg-brand md:-bottom-5 md:-right-5" />
+                <div className="relative overflow-hidden bg-ink" style={{ aspectRatio: ratioOf(portrait) }}>
+                  <Image
+                    src={portrait.image}
+                    alt={pick(portrait.alt, lang) || pick(portrait.title, lang)}
+                    fill
+                    sizes="(max-width: 767px) 100vw, 60vw"
+                    className="object-cover"
+                  />
+                </div>
+              </div>
+              <figcaption className="pb-2">
+                <p className="eyebrow mb-4 text-stone">{t.gallery.cat.portraits}</p>
+                <p className="font-display text-3xl font-bold leading-tight md:text-4xl">{pick(settings.site.name, lang)}</p>
+                <div className="my-5 h-1 w-14 bg-brand" />
+                <p className="text-base leading-relaxed text-ink/80">{pick(settings.site.designation, lang)}</p>
+                {portrait.credit && (
+                  <p className="mt-4 text-xs text-stone">
+                    {t.gallery.credit}: {portrait.credit}
+                  </p>
+                )}
+              </figcaption>
+            </figure>
+          </Reveal>
+        </section>
+      )}
 
       <section className="container-x py-16 md:py-24">
         <div className="space-y-14 md:space-y-20">

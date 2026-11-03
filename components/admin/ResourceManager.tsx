@@ -1,9 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowDown, ArrowUp, Eye, EyeOff, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Eye, EyeOff, Loader2, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { ApiError, useAdmin } from "@/components/admin/AdminProvider";
+import { BulkPhotoUpload } from "@/components/admin/BulkPhotoUpload";
 import { FieldRenderer, type FormValue } from "@/components/admin/fields";
 import { useLang } from "@/components/shared/Providers";
 import type { FieldDef, ResourceDef } from "@/lib/admin/resources";
@@ -79,8 +80,9 @@ export function ResourceManager({ resource }: { resource: ResourceDef }) {
     try {
       const res = await api<{ item: Item }>(`/c/${resource.collection}/${item.id}`, { method: "PUT", body: { ...rest, published: !item.published } });
       setItems((prev) => prev?.map((i) => (i.id === item.id ? res.item : i)) ?? null);
+      setError("");
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : t.admin.error);
+      setError(e instanceof ApiError ? [e.message, ...(e.issues?.map((i) => i.message) ?? [])].join(" — ") : t.admin.error);
     }
   }
 
@@ -110,6 +112,9 @@ export function ResourceManager({ resource }: { resource: ResourceDef }) {
         </button>
       </div>
       {error && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-bold text-red-800">{error}</p>}
+      {resource.bulkUpload && imageField && (
+        <BulkPhotoUpload existingUrls={(items ?? []).map((i) => String(i[imageField] ?? "")).filter(Boolean)} onDone={load} />
+      )}
 
       {items === null ? (
         <div className="grid place-items-center py-20"><Loader2 className="h-6 w-6 animate-spin" /></div>
@@ -127,12 +132,18 @@ export function ResourceManager({ resource }: { resource: ResourceDef }) {
               )}
               {imageField && typeof item[imageField] === "string" && item[imageField] ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={item[imageField] as string} alt="" className="h-16 w-12 shrink-0 rounded-md border-2 border-ink object-cover" />
+                <img src={item[imageField] as string} alt="" className={`h-16 shrink-0 rounded-md border-2 border-ink object-cover ${resource.bulkUpload ? "w-24" : "w-12"}`} />
               ) : null}
               <div className="min-w-0 flex-1">
                 <p className="truncate font-extrabold">{rowText(item[resource.titleField], lang) || "—"}</p>
                 {resource.subtitleField && <p className="truncate text-xs text-stone">{rowText(item[resource.subtitleField], lang)}</p>}
               </div>
+              {resource.bulkUpload && (
+                <>
+                  {Boolean(item.featured) && <Star className="h-4 w-4 shrink-0 fill-brand" aria-label="Featured" />}
+                  {item.permission !== "authorised" && <span className="rounded-full border-2 border-ink px-2.5 py-0.5 text-[11px] font-bold">Awaiting permission</span>}
+                </>
+              )}
               {typeof item.downloads === "number" && <span className="hidden text-xs font-bold text-stone md:inline">↓ {item.downloads}</span>}
               <span className={`rounded-full px-3 py-1 text-xs font-bold ${item.published ? "bg-brand" : "bg-mist text-stone"}`}>
                 {item.published ? t.admin.published : t.admin.draft}
@@ -158,6 +169,7 @@ export function ResourceManager({ resource }: { resource: ResourceDef }) {
             onClose={() => setEditing(null)}
             onSaved={() => {
               setEditing(null);
+              setError("");
               load();
             }}
           />
@@ -232,8 +244,27 @@ function EditorModal({
           <button type="button" onClick={onClose} aria-label={t.admin.cancel} className="rounded-full p-1.5 hover:bg-ink hover:text-brand"><X className="h-5 w-5" /></button>
         </div>
         <div className="space-y-5 p-5">
+          {resource.bulkUpload && resource.imageField && typeof form[resource.imageField] === "string" && form[resource.imageField] ? (
+            <figure className="overflow-hidden rounded-xl border-2 border-ink bg-ink">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={form[resource.imageField] as string} alt="" className="mx-auto max-h-80 w-auto max-w-full object-contain" />
+              <figcaption className="flex flex-wrap items-center justify-between gap-2 bg-ink px-3 py-2 text-xs font-bold text-white">
+                <span>Preview — how the photograph appears in the gallery viewer</span>
+                {typeof form.width === "number" && typeof form.height === "number" && <span className="text-brand">{form.width} × {form.height}px</span>}
+              </figcaption>
+            </figure>
+          ) : null}
           {resource.fields.map((f) => (
-            <FieldRenderer key={f.name} def={f} value={form[f.name]} categories={categories} error={issues[f.name]} onChange={(v) => setForm((s) => ({ ...s, [f.name]: v }))} />
+            <FieldRenderer
+              key={f.name}
+              def={f}
+              value={form[f.name]}
+              categories={categories}
+              error={issues[f.name]}
+              siblings={form}
+              onMeta={(patch) => setForm((s) => ({ ...s, ...patch }))}
+              onChange={(v) => setForm((s) => ({ ...s, [f.name]: v }))}
+            />
           ))}
           {message && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm font-bold text-red-800">{message}</p>}
         </div>

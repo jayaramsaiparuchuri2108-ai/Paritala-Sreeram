@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { hashPassword, validatePasswordStrength, verifyPassword } from "../lib/auth/password.ts";
-import { sniffImageType } from "../lib/storage/images.ts";
+import fs from "node:fs";
+import { readImageSize, slugifyName, sniffImageType } from "../lib/storage/images.ts";
 import { isAllowedAssetUrl, isHttpsUrl, normalizeInstagramUrl, parseYoutubeId } from "../lib/validation/urls.ts";
 
 test("password hashing: verifies correct password, rejects wrong, never stores plaintext", async () => {
@@ -52,4 +53,24 @@ test("asset URL allow-list blocks arbitrary hosts and traversal", () => {
   assert.equal(isAllowedAssetUrl("javascript:alert(1)"), false);
   assert.equal(isAllowedAssetUrl("/logos/../../etc/passwd"), false);
   assert.equal(isHttpsUrl("http://x.com"), false);
+});
+
+test("image size is read from the file header (webp, png, jpeg)", () => {
+  const webp = new Uint8Array(fs.readFileSync(new URL("../public/images/portraits/paritala-sreeram-official-portrait.webp", import.meta.url)));
+  assert.equal(sniffImageType(webp), "image/webp");
+  assert.deepEqual(readImageSize(webp, "image/webp"), { width: 1500, height: 844 });
+
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+  assert.deepEqual(readImageSize(new Uint8Array(png), "image/png"), { width: 1, height: 1 });
+
+  const jpeg = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x04, 0x00, 0x00, 0xff, 0xc0, 0x00, 0x11, 0x08, 0x00, 0x10, 0x00, 0x20, 0x03, 0, 0, 0, 0, 0]);
+  assert.deepEqual(readImageSize(jpeg, "image/jpeg"), { width: 32, height: 16 });
+  assert.equal(readImageSize(new Uint8Array([1, 2, 3]), "image/png"), null);
+});
+
+test("stored image names are lower-case, descriptive and safe", () => {
+  assert.equal(slugifyName("Public Meeting 2024.JPG"), "public-meeting-2024");
+  assert.equal(slugifyName("../../etc/passwd"), "etcpasswd");
+  assert.equal(slugifyName("   "), "photo");
+  assert.ok(slugifyName("x".repeat(200)).length <= 60);
 });

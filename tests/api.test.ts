@@ -203,6 +203,79 @@ describe("api", () => {
       assert.equal((await fetch(`${BASE}/api/admin/c/posters/${item.id}`, { method: "DELETE", headers: auth() })).status, 404);
     });
 
+    test("gallery lifecycle: upload, dedupe, permission gate, publish, public view, download, delete", async (t) => {
+      if (!ready(t)) return;
+      const { readFile } = await import("node:fs/promises");
+      const bytes = await readFile(new URL("../public/images/portraits/paritala-sreeram-official-portrait.webp", import.meta.url));
+      const upload = async () => {
+        const form = new FormData();
+        form.set("file", new File([bytes], "portrait.webp", { type: "image/webp" }));
+        form.set("folder", "gallery");
+        form.set("category", "portraits");
+        form.set("name", "Test Portrait Upload");
+        return fetch(`${BASE}/api/admin/upload`, { method: "POST", headers: auth(), body: form });
+      };
+      const json = { "Content-Type": "application/json" };
+
+      const first = await upload();
+      assert.equal(first.status, 201);
+      const stored = await first.json();
+      assert.equal(stored.width, 1500);
+      assert.equal(stored.height, 844);
+      assert.match(stored.url, /portraits-test-portrait-upload-[0-9a-f]{16}\.webp$/);
+      const second = await (await upload()).json();
+      assert.equal(second.duplicate, true, "identical bytes must not be stored twice");
+      assert.equal(second.url, stored.url);
+
+      const body = {
+        title: { en: "Gallery test photograph", te: "" },
+        caption: { en: "", te: "" },
+        category: "portraits",
+        image: stored.url,
+        width: stored.width,
+        height: stored.height,
+        alt: { en: "A test photograph alt text", te: "" },
+        date: "",
+        sourceUrl: "",
+        credit: "Test",
+        permission: "pending",
+        allowDownload: false,
+        featured: false,
+        published: true,
+      };
+      const post = (b: unknown) => fetch(`${BASE}/api/admin/c/gallery`, { method: "POST", headers: auth(json), body: JSON.stringify(b) });
+      assert.equal((await post(body)).status, 422, "pending photographs cannot be published");
+      assert.equal((await post({ ...body, permission: "authorised", alt: { en: "", te: "" } })).status, 422, "alt text is required to publish");
+      assert.equal((await post({ ...body, category: "not-a-category", permission: "authorised" })).status, 422);
+
+      const created = await post({ ...body, published: false });
+      assert.equal(created.status, 201);
+      const { item } = await created.json();
+      try {
+        assert.doesNotMatch(await (await fetch(`${BASE}/gallery`)).text(), /A test photograph alt text/, "drafts are not public");
+
+        const put = (b: unknown) => fetch(`${BASE}/api/admin/c/gallery/${item.id}`, { method: "PUT", headers: auth(json), body: JSON.stringify(b) });
+        assert.equal((await put({ ...body, published: true })).status, 422, "still pending");
+        assert.equal((await put({ ...body, permission: "authorised", published: true })).status, 200);
+        const page = await (await fetch(`${BASE}/gallery`)).text();
+        assert.match(page, /A test photograph alt text/);
+        assert.doesNotMatch(page, /instagram\.com\/embed|instagram-media/, "gallery shows photographs, not Instagram embeds");
+
+        assert.equal((await fetch(`${BASE}/api/gallery/${item.id}/download`)).status, 404, "download is off by default");
+        assert.equal((await put({ ...body, permission: "authorised", published: true, allowDownload: true })).status, 200);
+        const dl = await fetch(`${BASE}/api/gallery/${item.id}/download`);
+        assert.equal(dl.status, 200);
+        assert.equal(dl.headers.get("content-type"), "image/webp");
+        assert.match(dl.headers.get("content-disposition") ?? "", /attachment; filename="gallery-test-photograph\.webp"/);
+
+        assert.equal((await put({ ...body, permission: "authorised", published: false })).status, 200);
+        assert.equal((await fetch(`${BASE}/api/gallery/${item.id}/download`)).status, 404, "unpublished photographs cannot be downloaded");
+      } finally {
+        assert.ok([200, 404].includes((await fetch(`${BASE}/api/admin/c/gallery/${item.id}`, { method: "DELETE", headers: auth() })).status));
+      }
+      assert.equal((await fetch(`${BASE}${stored.url}`)).status, 404, "stored file is removed with its last record");
+    });
+
     test("instagram: add normalises URL, then removes", async (t) => {
       if (!ready(t)) return;
       const res = await fetch(`${BASE}/api/admin/c/instagram`, { method: "POST", headers: auth({ "Content-Type": "application/json" }), body: JSON.stringify({ url: "https://www.instagram.com/paritalasreeramofficial/reel/ZZtest123/?igsh=1", published: true }) });

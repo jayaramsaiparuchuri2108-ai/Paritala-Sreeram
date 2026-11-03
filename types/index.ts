@@ -97,12 +97,38 @@ export interface Poster extends Base {
   createdAt: string;
 }
 
+export const GALLERY_CATEGORIES = [
+  "portraits",
+  "public-meetings",
+  "political-activities",
+  "community-visits",
+  "ceremonies-events",
+  "media",
+  "recent",
+] as const;
+export type GalleryCategory = (typeof GALLERY_CATEGORIES)[number];
+
+export type PhotoPermission = "authorised" | "pending";
+
+/** One photograph in the gallery. Only photographs that are authorised and published are shown publicly. */
 export interface GalleryPhoto extends Base {
   title: Bi;
-  category: string;
+  /** Original caption, entered by the admin — never generated. */
+  caption?: Bi;
+  category: GalleryCategory;
   image: string;
+  /** Intrinsic pixel size, recorded at upload so the layout never shifts. */
+  width?: number;
+  height?: number;
   alt: Bi;
+  /** Verified event date (YYYY-MM-DD). Left empty when unknown. */
+  date?: string;
+  /** Original post / publication URL, shown as an attribution link when known. */
+  sourceUrl?: string;
   credit: string;
+  permission: PhotoPermission;
+  allowDownload: boolean;
+  featured: boolean;
 }
 
 export interface InstagramPost extends Base {

@@ -1,7 +1,7 @@
 import en from "@/data/translations/en";
 import te from "@/data/translations/te";
 import type { CollectionName } from "@/lib/validation/schemas";
-import { ACTIVITY_CATEGORIES, type Bi, type SettingsKey } from "@/types";
+import { ACTIVITY_CATEGORIES, GALLERY_CATEGORIES, type Bi, type SettingsKey } from "@/types";
 
 // Client-safe admin configuration: which fields each section edits and how it is listed.
 
@@ -29,6 +29,10 @@ export interface FieldDef {
   required?: boolean;
   folder?: "posters" | "gallery" | "site";
   max?: number;
+  /** Image fields: record the uploaded file's pixel size as `width` / `height` and file it by category and title. */
+  trackSize?: boolean;
+  /** Bool fields: labels shown beside the switch (defaults to Published / Draft). */
+  boolLabels?: { on: Bi; off: Bi };
 }
 
 export interface ResourceDef {
@@ -41,6 +45,8 @@ export interface ResourceDef {
   titleField: string;
   subtitleField?: string;
   imageField?: string;
+  /** Show the multi-photograph uploader above the list (gallery). */
+  bulkUpload?: boolean;
   reorderable: boolean;
   defaults: Record<string, unknown>;
 }
@@ -48,6 +54,7 @@ export interface ResourceDef {
 const L = (en: string, te: string): Bi => ({ en, te });
 
 const categoryOptions = ACTIVITY_CATEGORIES.map((c) => ({ value: c, label: L(en.activities.cat[c], te.activities.cat[c]) }));
+const galleryCategoryOptions = GALLERY_CATEGORIES.map((c) => ({ value: c, label: L(en.gallery.cat[c], te.gallery.cat[c]) }));
 const published: FieldDef = { name: "published", label: L("Published", "ప్రచురితం"), type: "bool" };
 const sourceIds: FieldDef = {
   name: "sourceIds",
@@ -206,18 +213,37 @@ export const resources: ResourceDef[] = [
     slug: "gallery",
     collection: "gallery",
     title: L(en.admin.gallery, te.admin.gallery),
-    description: L("Authorised photographs for the gallery (stored in Vercel Blob).", "గ్యాలరీ కోసం అనుమతి ఉన్న ఫోటోలు (Vercel Blobలో నిల్వ)."),
+    description: L(
+      "Real photographs shown on the public Gallery and across the site. Upload several at once, then complete each one: caption, verified date, original post link and permission. A photograph only goes public when it is marked Authorised and Published.",
+      "సైట్‌లో, గ్యాలరీలో చూపే నిజమైన ఫోటోలు. ఒకేసారి అనేకం అప్‌లోడ్ చేసి, ప్రతి ఫోటోకు వివరణ, ధృవీకరించిన తేదీ, అసలు పోస్ట్ లింక్, అనుమతి నమోదు చేయండి. 'అనుమతి ఉంది' మరియు 'ప్రచురితం' రెండూ ఉంటేనే ఫోటో ప్రజలకు కనిపిస్తుంది.",
+    ),
     titleField: "title",
     subtitleField: "category",
     imageField: "image",
+    bulkUpload: true,
     reorderable: true,
-    defaults: { published: true, category: "events" },
+    defaults: { published: false, category: "recent", permission: "pending", allowDownload: false, featured: false },
     fields: [
+      { name: "image", label: L("Photograph", "ఫోటో"), type: "image", folder: "gallery", required: true, trackSize: true, help: L("Stored by category with a descriptive filename. The original file is kept untouched; the site serves optimised copies.", "వర్గం వారీగా వివరణాత్మక పేరుతో నిల్వ అవుతుంది. అసలు ఫైల్ మార్పు లేకుండా ఉంటుంది; సైట్ ఆప్టిమైజ్ చేసిన కాపీలను చూపుతుంది.") },
       { name: "title", label: L("Title", "శీర్షిక"), type: "bi-text", required: true },
-      { name: "category", label: L("Category", "వర్గం"), type: "select", options: categoryOptions, required: true },
-      { name: "image", label: L("Photograph", "ఫోటో"), type: "image", folder: "gallery", required: true },
-      { name: "alt", label: L("Image description (alt text)", "చిత్ర వివరణ (alt)"), type: "bi-text", required: true },
-      { name: "credit", label: L("Credit / permission holder", "క్రెడిట్ / అనుమతి ఇచ్చినవారు"), type: "text", required: true },
+      { name: "caption", label: L("Caption (original wording only)", "క్యాప్షన్ (అసలు పదాలే)"), type: "bi-textarea", help: L("Copy the original caption if there is one. Do not invent or embellish.", "అసలు క్యాప్షన్ ఉంటే అదే రాయండి. కల్పించకండి.") },
+      { name: "category", label: L("Category", "వర్గం"), type: "select", options: galleryCategoryOptions, required: true },
+      { name: "alt", label: L("Image description (alt text)", "చిత్ర వివరణ (alt)"), type: "bi-text", help: L("Describe what is visible, for screen readers. Required before publishing.", "కనిపించేది వివరించండి (స్క్రీన్ రీడర్ల కోసం). ప్రచురించే ముందు తప్పనిసరి.") },
+      { name: "date", label: L("Event date (only if verified)", "కార్యక్రమ తేదీ (ధృవీకరించినదే)"), type: "date" },
+      { name: "sourceUrl", label: L("Original post URL", "అసలు పోస్ట్ URL"), type: "url", help: L("Shown as a small 'Original post' link in the viewer.", "వ్యూయర్‌లో చిన్న 'అసలు పోస్ట్' లింక్‌గా కనిపిస్తుంది.") },
+      { name: "credit", label: L("Credit / permission holder", "క్రెడిట్ / అనుమతి ఇచ్చినవారు"), type: "text" },
+      {
+        name: "permission",
+        label: L("Permission to publish", "ప్రచురణ అనుమతి"),
+        type: "select",
+        options: [
+          { value: "pending", label: L("Pending — not cleared yet", "పెండింగ్ — ఇంకా అనుమతి లేదు") },
+          { value: "authorised", label: L("Authorised — rights holder has approved", "అనుమతి ఉంది — హక్కుదారు ఆమోదించారు") },
+        ],
+        required: true,
+      },
+      { name: "allowDownload", label: L("Allow visitors to download", "సందర్శకులు డౌన్‌లోడ్ చేయడానికి అనుమతి"), type: "bool", boolLabels: { on: L("Download allowed", "డౌన్‌లోడ్ అనుమతి"), off: L("No download", "డౌన్‌లోడ్ లేదు") } },
+      { name: "featured", label: L("Featured photograph", "ప్రత్యేక ఫోటో"), type: "bool", boolLabels: { on: L("Featured", "ప్రత్యేకం"), off: L("Not featured", "ప్రత్యేకం కాదు") } },
       published,
     ],
   },

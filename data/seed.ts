@@ -3,6 +3,7 @@ import type {
   BioSection,
   ElectoralRow,
   FocusArea,
+  GalleryPhoto,
   InstagramPost,
   PosterCategory,
   Settings,
@@ -95,6 +96,36 @@ export const seedBio: BioSection[] = [
  * Areas of focus: informational categories only. Descriptions are intentionally empty — they must be written
  * and approved by the office before publication (Admin → Areas of focus). They are not promises or claims.
  */
+/** Path of the official portrait supplied by the site owner (bundled in /public so it works on every deployment). */
+export const PORTRAIT_PATH = "/images/portraits/paritala-sreeram-official-portrait.webp";
+
+/**
+ * Photographs supplied by the site owner. No caption, event date or original post URL is recorded because none
+ * was provided - those stay empty until the owner confirms them (see research/photo-register.md).
+ */
+export const seedGallery: GalleryPhoto[] = [
+  {
+    id: "gal-official-portrait",
+    order: 1,
+    published: true,
+    title: { en: "Official portrait", te: "అధికారిక చిత్రం" },
+    category: "portraits",
+    image: PORTRAIT_PATH,
+    width: 1500,
+    height: 844,
+    alt: {
+      en: "Paritala Sreeram in a white shirt with hands folded in a namaste greeting, against a yellow background",
+      te: "పసుపు నేపథ్యంలో తెల్ల చొక్కా ధరించి చేతులు జోడించి నమస్కరిస్తున్న పరిటాల శ్రీరామ్",
+    },
+    date: "",
+    sourceUrl: "",
+    credit: "Supplied by the site owner",
+    permission: "authorised",
+    allowDownload: false,
+    featured: true,
+  },
+];
+
 export const seedFocus: FocusArea[] = [
   { id: "focus-economic", order: 1, published: true, title: { en: "Economic Development", te: "ఆర్థికాభివృద్ధి" }, description: { en: "", te: "" } },
   { id: "focus-infrastructure", order: 2, published: true, title: { en: "Infrastructure Development", te: "మౌలిక సదుపాయాల అభివృద్ధి" }, description: { en: "", te: "" } },
@@ -316,7 +347,7 @@ export const defaultSettings: Settings = {
     ogImage: "",
   },
   home: {
-    heroImages: [],
+    heroImages: [PORTRAIT_PATH],
     heroImageAlt: { en: "Portrait of Paritala Sreeram", te: "పరిటాల శ్రీరామ్ చిత్రం" },
     heroIntro: {
       en: "Telugu Desam Party in-charge for Dharmavaram — public profile, activities and updates.",
