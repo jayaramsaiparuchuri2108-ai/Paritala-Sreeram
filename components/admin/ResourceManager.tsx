@@ -221,7 +221,7 @@ function EditorModal({
     <motion.div className="fixed inset-0 z-[90] flex items-start justify-center overflow-y-auto bg-ink/70 p-3 backdrop-blur-sm md:p-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <motion.form
         onSubmit={submit}
-        className="w-full max-w-3xl rounded-2xl border-[3px] border-ink bg-paper shadow-[10px_10px_0_0_#f5d51c]"
+        className="w-full max-w-3xl rounded-2xl border-[3px] border-ink bg-paper shadow-[10px_10px_0_0_#ffd600]"
         initial={{ y: 30, opacity: 0, scale: 0.97 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         exit={{ y: 20, opacity: 0 }}

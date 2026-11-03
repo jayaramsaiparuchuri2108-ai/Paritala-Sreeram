@@ -15,7 +15,7 @@ export function SourceChips({ ids, label }: { ids: string[]; label?: string }) {
           target="_blank"
           rel="noopener noreferrer"
           title={`${s.title} — ${s.publisher}`}
-          className="inline-flex items-center gap-1 rounded-full bg-mist px-2.5 py-1 font-medium text-ink/80 transition-colors hover:bg-brand hover:text-ink"
+          className="inline-flex items-center gap-1 border border-ink/20 bg-white px-2.5 py-1 font-medium text-ink/80 transition-colors hover:border-ink hover:bg-brand hover:text-ink"
         >
           {s.publisher}
           <ExternalLink className="h-3 w-3" />

@@ -175,29 +175,31 @@ describe("api", () => {
       assert.equal(created.status, 201);
       const { item } = await created.json();
 
-      const pub = await (await fetch(`${BASE}/posters/${item.id}`)).text();
-      assert.match(pub, /Test poster/);
+      try {
+        const pub = await (await fetch(`${BASE}/posters/${item.id}`)).text();
+        assert.match(pub, /Test poster/);
 
-      const dl = await fetch(`${BASE}/api/posters/${item.id}/download`);
-      assert.equal(dl.status, 200);
-      assert.match(dl.headers.get("content-disposition") ?? "", /attachment/);
-      assert.equal(dl.headers.get("content-type"), "image/png");
+        const dl = await fetch(`${BASE}/api/posters/${item.id}/download`);
+        assert.equal(dl.status, 200);
+        assert.match(dl.headers.get("content-disposition") ?? "", /attachment/);
+        assert.equal(dl.headers.get("content-type"), "image/png");
 
-      // unpublish -> public 404
-      const { id, ...rest } = item;
-      void id;
-      const upd = await fetch(`${BASE}/api/admin/c/posters/${item.id}`, { method: "PUT", headers: auth({ "Content-Type": "application/json" }), body: JSON.stringify({ ...rest, published: false }) });
-      assert.equal(upd.status, 200);
-      assert.equal((await fetch(`${BASE}/posters/${item.id}`)).status, 404);
-      assert.equal((await fetch(`${BASE}/api/posters/${item.id}/download`)).status, 404);
+        // unpublish -> public 404
+        const { id, ...rest } = item;
+        void id;
+        const upd = await fetch(`${BASE}/api/admin/c/posters/${item.id}`, { method: "PUT", headers: auth({ "Content-Type": "application/json" }), body: JSON.stringify({ ...rest, published: false }) });
+        assert.equal(upd.status, 200);
+        assert.equal((await fetch(`${BASE}/posters/${item.id}`)).status, 404);
+        assert.equal((await fetch(`${BASE}/api/posters/${item.id}/download`)).status, 404);
 
-      const list = await (await fetch(`${BASE}/api/admin/c/posters`, { headers: auth() })).json();
-      const ids = list.items.map((i: { id: string }) => i.id);
-      const reorder = await fetch(`${BASE}/api/admin/c/posters/reorder`, { method: "POST", headers: auth({ "Content-Type": "application/json" }), body: JSON.stringify({ ids: [...ids].reverse() }) });
-      assert.equal(reorder.status, 200);
-
-      const del = await fetch(`${BASE}/api/admin/c/posters/${item.id}`, { method: "DELETE", headers: auth() });
-      assert.equal(del.status, 200);
+        const list = await (await fetch(`${BASE}/api/admin/c/posters`, { headers: auth() })).json();
+        const ids = list.items.map((i: { id: string }) => i.id);
+        const reorder = await fetch(`${BASE}/api/admin/c/posters/reorder`, { method: "POST", headers: auth({ "Content-Type": "application/json" }), body: JSON.stringify({ ids: [...ids].reverse() }) });
+        assert.equal(reorder.status, 200);
+      } finally {
+        const del = await fetch(`${BASE}/api/admin/c/posters/${item.id}`, { method: "DELETE", headers: auth() });
+        assert.ok([200, 404].includes(del.status));
+      }
       assert.equal((await fetch(`${BASE}/api/admin/c/posters/${item.id}`, { method: "DELETE", headers: auth() })).status, 404);
     });
 

@@ -2,6 +2,7 @@ import type {
   Activity,
   BioSection,
   ElectoralRow,
+  FocusArea,
   InstagramPost,
   PosterCategory,
   Settings,
@@ -88,6 +89,19 @@ export const seedBio: BioSection[] = [
     },
     sourceIds: ["S04", "S05", "S12"],
   },
+];
+
+/**
+ * Areas of focus: informational categories only. Descriptions are intentionally empty — they must be written
+ * and approved by the office before publication (Admin → Areas of focus). They are not promises or claims.
+ */
+export const seedFocus: FocusArea[] = [
+  { id: "focus-economic", order: 1, published: true, title: { en: "Economic Development", te: "ఆర్థికాభివృద్ధి" }, description: { en: "", te: "" } },
+  { id: "focus-infrastructure", order: 2, published: true, title: { en: "Infrastructure Development", te: "మౌలిక సదుపాయాల అభివృద్ధి" }, description: { en: "", te: "" } },
+  { id: "focus-welfare", order: 3, published: true, title: { en: "Social Welfare", te: "సామాజిక సంక్షేమం" }, description: { en: "", te: "" } },
+  { id: "focus-governance", order: 4, published: true, title: { en: "Good Governance", te: "సుపరిపాలన" }, description: { en: "", te: "" } },
+  { id: "focus-culture", order: 5, published: true, title: { en: "Telugu Cultural Heritage", te: "తెలుగు సాంస్కృతిక వారసత్వం" }, description: { en: "", te: "" } },
+  { id: "focus-community", order: 6, published: true, title: { en: "Community Engagement", te: "ప్రజలతో అనుసంధానం" }, description: { en: "", te: "" } },
 ];
 
 export const seedTimeline: TimelineEvent[] = [

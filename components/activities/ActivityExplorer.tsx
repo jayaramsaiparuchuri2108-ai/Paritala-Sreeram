@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { CalendarDays, ExternalLink, MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -9,32 +9,49 @@ import { useLang } from "@/components/shared/Providers";
 import { ACTIVITY_CATEGORIES, type Activity } from "@/types";
 import { formatDate, pick } from "@/lib/i18n";
 
+/** Newspaper-style card: photograph (or a typographic date block when none is available), kicker, headline, summary. */
 export function ActivityCard({ activity }: { activity: Activity }) {
   const { lang, t } = useLang();
+  const title = pick(activity.title, lang);
+  const date = activity.date ? new Date(activity.date) : null;
+  const validDate = date && !Number.isNaN(date.getTime()) ? date : null;
+  const location = activity.location ? pick(activity.location, lang) : "";
+
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl border-2 border-ink bg-white transition-shadow hover:shadow-[8px_8px_0_0_#171717]">
-      {activity.image ? (
-        <div className="zoom-img relative aspect-[16/10] overflow-hidden border-b-2 border-ink">
-          <Image src={activity.image} alt={pick(activity.imageAlt, lang) || pick(activity.title, lang)} fill loading="lazy" sizes="(max-width: 768px) 100vw, 400px" className="object-cover" />
-        </div>
-      ) : (
-        <div className="h-3 border-b-2 border-ink [background-image:repeating-linear-gradient(-45deg,#171717_0_8px,#f5d51c_8px_20px)]" />
-      )}
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <span className="self-start rounded-full bg-brand px-3 py-1 text-xs font-bold">{t.activities.cat[activity.category]}</span>
-        <h3 className="text-xl font-extrabold leading-snug">{pick(activity.title, lang)}</h3>
-        <p className="text-sm text-ink/75">{pick(activity.description, lang)}</p>
-        <div className="mt-auto flex flex-col gap-1.5 pt-2 text-xs text-stone">
-          {activity.date && (
-            <span className="inline-flex items-center gap-2"><CalendarDays className="h-3.5 w-3.5" />{formatDate(activity.date, lang)}</span>
-          )}
-          {activity.location && pick(activity.location, lang) && (
-            <span className="inline-flex items-center gap-2"><MapPin className="h-3.5 w-3.5" />{pick(activity.location, lang)}</span>
+    <article className="group flex h-full flex-col border border-ink/15 bg-white transition-colors duration-300 hover:border-ink">
+      <div className="zoom-img relative aspect-[16/10] overflow-hidden bg-ink">
+        {activity.image ? (
+          <Image src={activity.image} alt={pick(activity.imageAlt, lang) || title} fill loading="lazy" sizes="(max-width: 768px) 100vw, 420px" className="object-cover" />
+        ) : (
+          <div aria-hidden className="absolute inset-0 flex items-end justify-between bg-ink p-6 text-white">
+            <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-brand" />
+            <div className="absolute inset-3 border border-white/15" />
+            <div className="relative">
+              <p className="font-display text-6xl font-bold leading-none text-brand md:text-7xl">{validDate ? validDate.getUTCDate() : "·"}</p>
+              {validDate && <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/70">{formatDate(activity.date!, lang).replace(/^\d+\s*/, "")}</p>}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col gap-3 p-6">
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold uppercase tracking-[0.18em]">
+          <span className="bg-brand px-2 py-1 text-ink">{t.activities.cat[activity.category]}</span>
+          {activity.date && <span className="text-stone">{formatDate(activity.date, lang)}</span>}
+        </p>
+        <h3 className="font-display text-xl font-bold leading-snug md:text-2xl">{title}</h3>
+        <p className="text-sm leading-relaxed text-stone">{pick(activity.description, lang)}</p>
+        <div className="mt-auto flex flex-col gap-2 pt-3 text-xs text-stone">
+          {location && (
+            <span className="inline-flex items-center gap-2">
+              <MapPin className="h-3.5 w-3.5" aria-hidden />
+              {location}
+            </span>
           )}
           {activity.sourceUrl && (
-            <a href={activity.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-bold text-ink hover:underline">
-              <ExternalLink className="h-3.5 w-3.5" />
-              {t.common.source}: {activity.sourceName ?? new URL(activity.sourceUrl).hostname}
+            <a href={activity.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink">
+              <span className="link-line">{t.common.readMore}</span>
+              <span className="text-stone">· {activity.sourceName ?? new URL(activity.sourceUrl).hostname}</span>
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
             </a>
           )}
         </div>
@@ -57,9 +74,9 @@ export function ActivityExplorer({ activities }: { activities: Activity[] }) {
             role="tab"
             aria-selected={category === c}
             onClick={() => setCategory(c)}
-            className="relative rounded-full border-2 border-ink px-4 py-2 text-sm font-bold"
+            className={`relative border border-ink px-4 py-2 text-[13px] font-semibold transition-colors ${category === c ? "text-brand" : "hover:bg-ink/5"}`}
           >
-            {category === c && <motion.span layoutId="activity-chip" className="absolute inset-0 -z-10 rounded-full bg-brand" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
+            {category === c && <motion.span layoutId="activity-chip" className="absolute inset-0 -z-10 bg-ink" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
             <span className="relative">{c === "all" ? t.common.all : t.activities.cat[c as keyof typeof t.activities.cat]}</span>
           </button>
         ))}

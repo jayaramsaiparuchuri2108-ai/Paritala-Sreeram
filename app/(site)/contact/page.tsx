@@ -34,14 +34,15 @@ export default async function ContactPage() {
   return (
     <>
       <PageHero title={t.contact.title} lead={t.contact.lead} />
-      <section className="container-x grid gap-10 py-16 md:py-24 lg:grid-cols-2">
+      <section className="container-x grid grid-cols-[minmax(0,1fr)] gap-10 py-16 md:py-24 lg:grid-cols-2">
         <Reveal>
-          <h2 className="mb-6 font-display text-3xl uppercase">{t.contact.follow}</h2>
-          <ul className="space-y-4">
+          <p className="eyebrow mb-4 text-stone">{t.nav.contact}</p>
+          <h2 className="mb-8 font-display text-3xl font-bold md:text-4xl">{t.contact.follow}</h2>
+          <ul className="border-b border-ink/15">
             {channels.map(({ href, label, Icon }) => (
-              <li key={label}>
-                <a href={href} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-2xl border-2 border-ink bg-white p-5 transition-all hover:-translate-y-0.5 hover:bg-brand hover:shadow-[6px_6px_0_0_#171717]">
-                  <span className="flex items-center gap-4 text-lg font-extrabold">
+              <li key={label} className="border-t border-ink/15">
+                <a href={href} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between gap-4 py-5 transition-[padding,background-color] duration-300 hover:bg-brand hover:px-4">
+                  <span className="flex items-center gap-4 font-display text-xl font-bold md:text-2xl">
                     {Icon ? <Icon className="h-6 w-6" /> : <span className="h-6 w-6" />} {label}
                   </span>
                   <span className="max-w-[55%] truncate text-sm text-stone group-hover:text-ink">{href.replace(/^https?:\/\//, "")}</span>
@@ -51,7 +52,7 @@ export default async function ContactPage() {
           </ul>
         </Reveal>
         <Reveal delay={0.1}>
-          <div className="h-full rounded-2xl border-[3px] border-ink bg-cream p-6 md:p-8">
+          <div className="h-full border border-ink/15 bg-cream p-6 md:p-10">
             {direct.length === 0 ? (
               <p className="text-ink/80">{t.contact.noDirect}</p>
             ) : (
@@ -61,13 +62,13 @@ export default async function ContactPage() {
                     <Icon className="mt-1 h-5 w-5 shrink-0" />
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wider text-stone">{label}</p>
-                      {href ? <a href={href} className="font-bold underline decoration-brand decoration-2 underline-offset-4">{value}</a> : <p className="font-bold">{value}</p>}
+                      {href ? <a href={href} className="link-line font-semibold">{value}</a> : <p className="font-semibold">{value}</p>}
                     </div>
                   </li>
                 ))}
               </ul>
             )}
-            {pick(contact.note, lang) && <p className="mt-6 border-t-2 border-line pt-5 text-sm text-ink/75">{pick(contact.note, lang)}</p>}
+            {pick(contact.note, lang) && <p className="mt-6 border-t border-ink/15 pt-5 text-sm text-ink/75">{pick(contact.note, lang)}</p>}
           </div>
         </Reveal>
       </section>

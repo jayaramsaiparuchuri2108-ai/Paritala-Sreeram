@@ -20,11 +20,11 @@ export default async function SourcesPage() {
         <ul className="grid gap-4 md:grid-cols-2">
           {sources.map((s, i) => (
             <Reveal as="li" key={s.id} delay={(i % 2) * 0.06}>
-              <div className="h-full rounded-2xl border-2 border-ink bg-white p-5">
-                <p className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-stone">
-                  <span className="rounded bg-brand px-2 py-0.5 text-ink">{s.id}</span> {s.publisher}
+              <div className="h-full border border-ink/15 bg-white p-6 transition-colors hover:border-ink">
+                <p className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-stone">
+                  <span className="bg-brand px-2 py-0.5 text-ink">{s.id}</span> {s.publisher}
                 </p>
-                <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 text-lg font-extrabold leading-snug hover:underline">
+                <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 font-display text-lg font-bold leading-snug hover:underline">
                   {s.title} <ExternalLink className="mt-1.5 h-4 w-4 shrink-0" />
                 </a>
                 <p className="mt-2 text-sm text-stone">
@@ -35,7 +35,7 @@ export default async function SourcesPage() {
             </Reveal>
           ))}
         </ul>
-        <p className="mt-10 rounded-2xl border-2 border-dashed border-ink bg-cream p-5 text-sm">{t.sources.note}</p>
+        <p className="mt-10 border border-dashed border-ink/40 bg-cream p-5 text-sm">{t.sources.note}</p>
       </section>
     </>
   );

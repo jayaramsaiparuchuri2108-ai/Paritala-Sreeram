@@ -1,28 +1,29 @@
-import { ArrowRight, CalendarDays, ExternalLink } from "lucide-react";
-import Link from "next/link";
-import { ActivityCard } from "@/components/activities/ActivityExplorer";
-import { Reveal } from "@/components/animations/Reveal";
-import { InstagramGrid } from "@/components/gallery/InstagramGrid";
+import { FocusAreas } from "@/components/home/FocusAreas";
+import { GalleryStrip } from "@/components/home/GalleryStrip";
 import { Hero } from "@/components/home/Hero";
-import { PosterCard } from "@/components/posters/PosterExplorer";
-import { SectionHeading } from "@/components/shared/SectionHeading";
-import { EmptyState } from "@/components/shared/EmptyState";
+import { Intro } from "@/components/home/Intro";
+import { NewsSection } from "@/components/home/NewsSection";
+import { PosterBand } from "@/components/home/PosterBand";
+import { SplitSection } from "@/components/home/SplitSection";
 import { VideoGrid } from "@/components/videos/VideoGrid";
+import { SectionHeading } from "@/components/shared/SectionHeading";
 import { getSettings, publicList } from "@/lib/database/content";
 import { formatDate, getDict, pick } from "@/lib/i18n";
 import { getLang } from "@/lib/lang-server";
 import { jsonLd, pageMetadata } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/site-url";
-import type { Activity, BioSection, InstagramPost, Poster, UpdateItem, VideoEntry } from "@/types";
+import type { Activity, BioSection, FocusArea, GalleryPhoto, InstagramPost, Poster, UpdateItem, VideoEntry } from "@/types";
 
 export async function generateMetadata() {
   return pageMetadata({ path: "/" });
 }
 
+const COMMUNITY_CATEGORIES: Activity["category"][] = ["trust", "social", "village-visits", "public-interactions"];
+
 export default async function HomePage() {
   const lang = await getLang();
   const t = getDict(lang);
-  const [settings, updates, bio, activities, instagram, videos, posters] = await Promise.all([
+  const [settings, updates, bio, activities, instagram, videos, posters, focus, photos] = await Promise.all([
     getSettings(),
     publicList<UpdateItem>("updates"),
     publicList<BioSection>("bio"),
@@ -30,10 +31,19 @@ export default async function HomePage() {
     publicList<InstagramPost>("instagram"),
     publicList<VideoEntry>("videos"),
     publicList<Poster>("posters"),
+    publicList<FocusArea>("focus"),
+    publicList<GalleryPhoto>("gallery"),
   ]);
-  const intro = bio.find((b) => b.key === "intro") ?? bio[0];
-  const latestPosters = [...posters].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 4);
+  const section = (key: string) => bio.find((b) => b.key === key);
+  const intro = section("intro") ?? bio[0];
+  const background = section("background");
+  const family = section("family");
+  const journey = section("journey");
+  const roles = section("roles");
+  const latestPosters = [...posters].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const community = activities.find((a) => COMMUNITY_CATEGORIES.includes(a.category));
 
+  const alt = (b?: BioSection) => (b ? pick(b.imageAlt, lang) || pick(b.title, lang) : "");
   const personLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -48,116 +58,81 @@ export default async function HomePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(personLd) }} />
-      <Hero
-        name={settings.site.name}
-        designation={settings.site.designation}
-        intro={settings.home.heroIntro}
-        images={settings.home.heroImages}
-        imageAlt={settings.home.heroImageAlt}
-      />
+      <Hero name={settings.site.name} designation={settings.site.designation} intro={settings.home.heroIntro} images={settings.home.heroImages} imageAlt={settings.home.heroImageAlt} />
 
-      {/* Latest public updates */}
-      <section id="updates" className="container-x scroll-mt-24 py-20 md:py-28">
-        <SectionHeading eyebrow={t.common.latest} title={t.home.updatesTitle} lead={t.home.updatesLead} />
-        {updates.length === 0 ? (
-          <EmptyState>{t.common.comingSoon}</EmptyState>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {updates.slice(0, 4).map((u, i) => (
-              <Reveal key={u.id} delay={i * 0.08}>
-                <article className="relative h-full overflow-hidden rounded-2xl border-2 border-ink bg-white p-6 shadow-[6px_6px_0_0_#f5d51c] transition-transform hover:-translate-y-1">
-                  <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-ink px-3 py-1 text-xs font-bold text-brand">
-                    <CalendarDays className="h-3.5 w-3.5" /> {formatDate(u.date, lang)}
-                  </p>
-                  <h3 className="text-xl font-extrabold leading-snug">{pick(u.title, lang)}</h3>
-                  <p className="mt-2 text-ink/75">{pick(u.body, lang)}</p>
-                  {u.sourceUrl && (
-                    <a href={u.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-bold underline decoration-brand decoration-2 underline-offset-4">
-                      {t.common.reported}: {u.sourceName} <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  )}
-                </article>
-              </Reveal>
-            ))}
+      <Intro intro={intro} education={section("education")} designation={settings.site.designation} />
+
+      {background && (
+        <SplitSection
+          tone="dark"
+          imageSide="left"
+          eyebrow={t.home.sectionBackground}
+          title={pick(background.title, lang)}
+          body={[pick(background.body, lang), family ? pick(family.body, lang) : ""].filter(Boolean).join("\n\n")}
+          image={background.image}
+          imageAlt={alt(background)}
+          monogram="PS"
+          cta={{ href: "/about", label: t.home.readFullBio }}
+        />
+      )}
+
+      {journey && (
+        <SplitSection
+          tone="brand"
+          imageSide="right"
+          eyebrow={t.home.sectionJourney}
+          title={pick(journey.title, lang)}
+          body={pick(journey.body, lang)}
+          image={journey.image}
+          imageAlt={alt(journey)}
+          monogram="TDP"
+          cta={{ href: "/about#timeline", label: t.about.timelineTitle }}
+        />
+      )}
+
+      {roles && (
+        <SplitSection
+          tone="dark"
+          imageSide="left"
+          eyebrow={t.home.sectionRoles}
+          title={pick(roles.title, lang)}
+          body={pick(roles.body, lang)}
+          image={roles.image}
+          imageAlt={alt(roles)}
+          monogram="DV"
+          meta={settings.site.designation[lang]}
+        />
+      )}
+
+      {community && (
+        <SplitSection
+          tone="brand"
+          imageSide="right"
+          eyebrow={t.home.sectionCommunity}
+          title={pick(community.title, lang)}
+          body={pick(community.description, lang)}
+          image={community.image}
+          imageAlt={pick(community.imageAlt, lang) || pick(community.title, lang)}
+          monogram="PS"
+          meta={community.date ? formatDate(community.date, lang) : undefined}
+          cta={{ href: "/activities", label: t.nav.activities }}
+        />
+      )}
+
+      <NewsSection activities={activities} updates={updates} />
+      <FocusAreas areas={focus} />
+      <GalleryStrip photos={photos} instagram={instagram} />
+
+      {videos.length > 0 && (
+        <section className="bg-white py-20 md:py-28">
+          <div className="container-x">
+            <SectionHeading eyebrow={t.nav.videos} title={t.home.videosTitle} lead={t.home.videosLead} href="/videos" linkLabel={t.common.viewAll} />
+            <VideoGrid videos={videos} limit={3} />
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
-      {/* Biography preview */}
-      <section className="bg-brand py-20 md:py-28">
-        <div className="container-x grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-          <Reveal>
-            <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em]">
-              <span className="h-[3px] w-10 bg-ink" /> {t.home.bioTitle}
-            </p>
-            <h2 className="font-display text-4xl uppercase leading-[1.05] md:text-6xl">{pick(settings.site.name, lang)}</h2>
-            {intro && <p className="mt-5 max-w-xl text-lg text-ink/85">{pick(intro.body, lang)}</p>}
-            <Link href="/about" className="group mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-bold text-brand">
-              {t.common.readMore} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Reveal>
-          <Reveal delay={0.15}>
-            <dl className="divide-y-2 divide-ink rounded-2xl border-[3px] border-ink bg-white shadow-[10px_10px_0_0_#171717]">
-              {bio
-                .filter((b) => ["education", "roles", "family"].includes(b.key))
-                .map((b) => (
-                  <div key={b.id} className="p-5">
-                    <dt className="text-xs font-bold uppercase tracking-[0.2em] text-stone">{pick(b.title, lang)}</dt>
-                    <dd className="mt-1 line-clamp-3 text-sm text-ink/85">{pick(b.body, lang).split("\n")[0]}</dd>
-                  </div>
-                ))}
-            </dl>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Public activities */}
-      <section className="container-x py-20 md:py-28">
-        <SectionHeading eyebrow={t.nav.activities} title={t.home.activitiesTitle} lead={t.home.activitiesLead} href="/activities" linkLabel={t.common.viewAll} />
-        {activities.length === 0 ? (
-          <EmptyState>{t.common.comingSoon}</EmptyState>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {activities.slice(0, 3).map((a, i) => (
-              <Reveal key={a.id} delay={i * 0.08}>
-                <ActivityCard activity={a} />
-              </Reveal>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Instagram preview */}
-      <section className="bg-ink py-20 md:py-28">
-        <div className="container-x">
-          <SectionHeading dark eyebrow="Instagram" title={t.home.galleryTitle} lead={t.home.galleryLead} href="/gallery" linkLabel={t.common.viewAll} />
-          <InstagramGrid posts={instagram} limit={3} />
-        </div>
-      </section>
-
-      {/* Videos */}
-      <section className="container-x py-20 md:py-28">
-        <SectionHeading eyebrow={t.nav.videos} title={t.home.videosTitle} lead={t.home.videosLead} href="/videos" linkLabel={t.common.viewAll} />
-        <VideoGrid videos={videos} limit={3} />
-      </section>
-
-      {/* Posters preview */}
-      <section className="bg-cream py-20 md:py-28">
-        <div className="container-x">
-          <SectionHeading eyebrow={t.nav.posters} title={t.home.postersTitle} lead={t.home.postersLead} href="/posters" linkLabel={t.common.viewAll} />
-          {latestPosters.length === 0 ? (
-            <EmptyState>{t.posters.empty}</EmptyState>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-              {latestPosters.map((p, i) => (
-                <Reveal key={p.id} delay={i * 0.07}>
-                  <PosterCard poster={p} />
-                </Reveal>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      <PosterBand posters={latestPosters} />
     </>
   );
 }

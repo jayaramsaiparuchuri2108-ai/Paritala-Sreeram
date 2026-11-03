@@ -53,12 +53,12 @@ export function Lightbox({ open, onClose, children, label, onPrev, onNext }: Lig
             ref={closeRef}
             onClick={onClose}
             aria-label={t.nav.close}
-            className="absolute right-4 top-4 z-10 grid h-11 w-11 place-items-center rounded-full bg-brand text-ink transition-transform hover:scale-105"
+            className="absolute right-4 top-4 z-10 grid h-11 w-11 place-items-center bg-brand text-ink transition-transform hover:scale-105"
           >
             <X className="h-5 w-5" />
           </button>
           <motion.div
-            className="max-h-full w-full max-w-5xl overflow-auto rounded-2xl bg-paper shadow-2xl"
+            className="max-h-full w-full max-w-5xl overflow-auto bg-paper shadow-2xl"
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 10 }}

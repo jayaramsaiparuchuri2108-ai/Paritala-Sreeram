@@ -1,7 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
 import "@fontsource/anton/400.css";
+import "@fontsource/playfair-display/500.css";
+import "@fontsource/playfair-display/600.css";
 import "@fontsource/playfair-display/700.css";
+import "@fontsource/playfair-display/800.css";
+import "@fontsource/noto-serif-telugu/600.css";
+import "@fontsource/noto-serif-telugu/700.css";
 import "@fontsource/noto-sans-telugu/400.css";
 import "@fontsource/noto-sans-telugu/500.css";
 import "@fontsource/noto-sans-telugu/700.css";
@@ -31,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#F5D51C",
+  themeColor: "#FFD600",
   width: "device-width",
   initialScale: 1,
 };

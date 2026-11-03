@@ -53,7 +53,15 @@ export interface BioSection extends Base {
   key: string;
   title: Bi;
   body: Bi;
+  /** Optional authorised photograph shown beside the section on the home page. */
+  image?: string;
+  imageAlt?: Bi;
   sourceIds: string[];
+}
+
+export interface FocusArea extends Base {
+  title: Bi;
+  description: Bi;
 }
 
 export interface ElectoralRow extends Base {
@@ -69,6 +77,8 @@ export interface UpdateItem extends Base {
   date: string;
   title: Bi;
   body: Bi;
+  image?: string;
+  imageAlt?: Bi;
   sourceName?: string;
   sourceUrl?: string;
 }

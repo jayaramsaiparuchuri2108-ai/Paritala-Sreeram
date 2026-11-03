@@ -44,29 +44,29 @@ export function Timeline({ events }: { events: TimelineEvent[] }) {
 
   return (
     <div ref={wrap} className="relative mx-auto max-w-4xl" aria-label={t.about.timelineTitle}>
-      <div aria-hidden className="absolute bottom-0 left-[19px] top-0 w-[3px] bg-line md:left-1/2 md:-translate-x-1/2" />
-      <div ref={line} aria-hidden className="absolute bottom-0 left-[19px] top-0 w-[3px] origin-top bg-ink md:left-1/2 md:-translate-x-1/2" style={{ transform: "scaleY(0)" }} />
+      <div aria-hidden className="absolute bottom-0 left-[11px] top-0 w-px bg-ink/15 md:left-1/2 md:-translate-x-1/2" />
+      <div ref={line} aria-hidden className="absolute bottom-0 left-[11px] top-0 w-[2px] origin-top bg-ink md:left-1/2 md:-translate-x-1/2" style={{ transform: "scaleY(0)" }} />
 
       <ol className="space-y-12">
         {events.map((e, i) => {
           const right = i % 2 === 1;
           return (
-            <Reveal as="li" key={e.id} className="relative pl-14 md:pl-0">
+            <Reveal as="li" key={e.id} className="relative pl-12 md:pl-0">
               <motion.span
                 aria-hidden
-                className="absolute left-0 top-1 z-10 grid h-10 w-10 place-items-center rounded-full border-[3px] border-ink bg-brand md:left-1/2 md:-translate-x-1/2"
+                className="absolute left-0 top-2 z-10 grid h-6 w-6 place-items-center bg-brand ring-4 ring-cream md:left-1/2 md:-translate-x-1/2"
                 whileInView={{ scale: [0.4, 1.15, 1] }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <span className="h-2.5 w-2.5 rounded-full bg-ink" />
+                <span className="h-2 w-2 bg-ink" />
               </motion.span>
               <div className={`md:grid md:grid-cols-2 md:gap-16 ${right ? "" : ""}`}>
                 <div className={right ? "md:col-start-2" : "md:text-right"}>
-                  <p className="font-display text-5xl leading-none text-ink md:text-6xl">{e.year}</p>
-                  {e.date && <p className="mt-1 text-xs font-bold uppercase tracking-wider text-stone">{formatDate(e.date, lang)}</p>}
-                  <h3 className="mt-3 text-xl font-extrabold leading-snug">{pick(e.title, lang)}</h3>
-                  <p className="mt-2 text-ink/75">{pick(e.body, lang)}</p>
+                  <p className="font-display text-5xl font-bold leading-none text-ink md:text-6xl">{e.year}</p>
+                  {e.date && <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.18em] text-stone">{formatDate(e.date, lang)}</p>}
+                  <h3 className="mt-4 font-display text-xl font-bold leading-snug">{pick(e.title, lang)}</h3>
+                  <p className="mt-2 text-stone">{pick(e.body, lang)}</p>
                   <div className={right ? "" : "md:flex md:justify-end"}>
                     <SourceChips ids={e.sourceIds} label={t.common.source} />
                   </div>

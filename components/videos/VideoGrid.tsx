@@ -14,7 +14,7 @@ function VideoCard({ video }: { video: VideoEntry }) {
   const title = pick(video.title, lang);
 
   return (
-    <article className="overflow-hidden rounded-2xl border-2 border-ink bg-white">
+    <article className="overflow-hidden border border-ink/15 bg-white transition-colors hover:border-ink">
       <div className="relative aspect-video bg-ink">
         {video.youtubeId ? (
           playing ? (
@@ -31,7 +31,7 @@ function VideoCard({ video }: { video: VideoEntry }) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" className="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100" />
               <span className="absolute inset-0 grid place-items-center">
-                <span className="grid h-16 w-16 place-items-center rounded-full bg-brand text-ink shadow-lg transition-transform group-hover:scale-110">
+                <span className="grid h-16 w-16 place-items-center bg-brand text-ink transition-transform group-hover:scale-110">
                   <Play className="h-7 w-7 translate-x-0.5" fill="currentColor" />
                 </span>
               </span>
@@ -43,8 +43,8 @@ function VideoCard({ video }: { video: VideoEntry }) {
           </a>
         )}
       </div>
-      <div className="p-4">
-        <h3 className="font-bold leading-snug">{title}</h3>
+      <div className="p-5">
+        <h3 className="font-display text-lg font-bold leading-snug">{title}</h3>
         {video.description && pick(video.description, lang) && <p className="mt-1 text-sm text-stone">{pick(video.description, lang)}</p>}
         <a href={video.url} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-ink/70 hover:text-ink">
           {t.common.openOnYoutube} <ExternalLink className="h-3 w-3" />

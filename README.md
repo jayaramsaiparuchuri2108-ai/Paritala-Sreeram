@@ -19,6 +19,16 @@ Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Motion + GSAP · Luci
 
 Language is a cookie (`ps_lang`); switching never changes the URL or scroll position. All content is stored as `{ en, te }` pairs.
 
+## Visual design
+
+The front end follows an editorial, premium-political look: yellow `#FFD600` / black `#080808` / white, serif display headings (Playfair), small letter-spaced uppercase labels, clean sans body, Noto Sans Telugu for Telugu, square corners and thin borders. Colours and fonts are tokens in `styles/globals.css` (`@theme`), so a palette change is a one-file edit. Animation is restrained and respects `prefers-reduced-motion`.
+
+Home page order: black hero → editorial intro → alternating image/text splits (biography, journey, responsibilities, community) → newspaper-style activities and updates → numbered **Areas of Focus** → dark recent-activity gallery with Instagram embeds → yellow "Explore Posters" band → black footer. The community split and videos band only appear when matching content exists.
+
+**Areas of Focus** (Admin → Areas of focus) are neutral informational categories with an optional description. Add a description only once it is approved; do not use them for promises or claims of completed work.
+
+**Images.** No authorised photographs exist yet, so image slots render a typographic monogram panel instead of a stand-in photo. They fill in automatically when the owner uploads real images: home hero images (Admin → Home page), biography image (Admin → Biography), activity and update images, and the gallery.
+
 ## Local development
 
 ```bash
@@ -93,3 +103,5 @@ Everything on the site comes from `research/source-registry.json` (sources and d
 6. **TDP logo**: used as the party's identifier; confirm permission with the party office.
 7. **Contact details**: none invented. Add the official ones in Admin → Contact.
 8. **Domain**: not purchased.
+9. **Areas of Focus descriptions**: shipped empty; add approved wording in Admin → Areas of focus.
+10. **Page loader**: a brief branded loader shows on full page loads (not on language switch); remove `<Loader />` from `app/(site)/layout.tsx` if undesired.

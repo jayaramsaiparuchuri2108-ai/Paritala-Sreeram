@@ -5,12 +5,13 @@ import { getLang } from "@/lib/lang-server";
 export default async function NotFound() {
   const t = getDict(await getLang());
   return (
-    <main className="grid min-h-screen place-items-center bg-cream px-6 text-center">
+    <main className="on-dark grid min-h-screen place-items-center bg-ink px-6 text-center text-white">
       <div>
-        <p className="font-display text-8xl text-brand-deep">404</p>
-        <h1 className="mt-2 font-display text-4xl uppercase">{t.notFound.title}</h1>
-        <p className="mt-3 text-stone">{t.notFound.body}</p>
-        <Link href="/" className="mt-8 inline-block rounded-full bg-ink px-7 py-3 font-bold text-brand">
+        <p className="font-display text-9xl font-bold text-brand">404</p>
+        <div className="mx-auto my-6 h-1 w-16 bg-brand" />
+        <h1 className="font-display text-4xl font-bold">{t.notFound.title}</h1>
+        <p className="mt-3 text-white/65">{t.notFound.body}</p>
+        <Link href="/" className="mt-9 inline-block bg-brand px-7 py-3.5 text-[13px] font-bold uppercase tracking-[0.14em] text-ink transition-colors hover:bg-white">
           {t.notFound.home}
         </Link>
       </div>

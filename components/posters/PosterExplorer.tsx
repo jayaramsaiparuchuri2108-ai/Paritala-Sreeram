@@ -32,12 +32,12 @@ export function PosterCard({ poster, onOpen, priority }: { poster: Poster; onOpe
           </span>
         </span>
       </div>
-      <div className="border-t-2 border-ink p-3">
-        <h3 className="line-clamp-2 text-sm font-bold leading-snug">{title}</h3>
+      <div className="border-t border-ink/15 p-3.5">
+        <h3 className="line-clamp-2 font-display text-sm font-bold leading-snug">{title}</h3>
       </div>
     </>
   );
-  const cls = "zoom-img group block w-full overflow-hidden rounded-xl border-2 border-ink bg-white text-left transition-shadow hover:shadow-[6px_6px_0_0_#171717]";
+  const cls = "zoom-img group block w-full overflow-hidden border border-ink/15 bg-white text-left transition-colors duration-300 hover:border-ink";
   return onOpen ? (
     <button type="button" onClick={onOpen} className={cls}>
       {inner}
@@ -82,7 +82,7 @@ export function PosterExplorer({ posters, categories }: { posters: Poster[]; cat
     <div>
       {latest.length > 0 && !query && category === "all" && (
         <section className="mb-14" aria-labelledby="latest-posters">
-          <h2 id="latest-posters" className="mb-5 font-display text-3xl uppercase">{t.posters.latest}</h2>
+          <h2 id="latest-posters" className="mb-6 font-display text-3xl font-bold">{t.posters.latest}</h2>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
             {latest.map((p, i) => (
               <PosterCard key={p.id} poster={p} priority={i < 2} onOpen={() => setOpenId(p.id)} />
@@ -99,9 +99,9 @@ export function PosterExplorer({ posters, categories }: { posters: Poster[]; cat
               role="tab"
               aria-selected={category === c.id}
               onClick={() => setCategory(c.id)}
-              className="relative rounded-full border-2 border-ink px-4 py-2 text-sm font-bold"
+              className={`relative border border-ink px-4 py-2 text-[13px] font-semibold transition-colors ${category === c.id ? "text-brand" : "hover:bg-ink/5"}`}
             >
-              {category === c.id && <motion.span layoutId="poster-chip" className="absolute inset-0 -z-10 rounded-full bg-brand" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
+              {category === c.id && <motion.span layoutId="poster-chip" className="absolute inset-0 -z-10 bg-ink" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
               <span className="relative">{pick(c.name, lang)}</span>
             </button>
           ))}
@@ -114,7 +114,7 @@ export function PosterExplorer({ posters, categories }: { posters: Poster[]; cat
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t.posters.searchPlaceholder}
-            className="w-full rounded-full border-2 border-ink bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-4 focus:ring-brand"
+            className="w-full border border-ink bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-4 focus:ring-brand"
           />
         </label>
       </div>
@@ -148,16 +148,14 @@ export function PosterExplorer({ posters, categories }: { posters: Poster[]; cat
             </div>
             <div className="flex flex-col gap-5 p-6">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-stone">
-                  {pick(categories.find((c) => c.id === open.category)?.name, lang)}
-                </p>
-                <h2 className="mt-2 font-display text-3xl uppercase leading-tight">{pick(open.title, lang)}</h2>
+                <p className="eyebrow text-stone">{pick(categories.find((c) => c.id === open.category)?.name, lang)}</p>
+                <h2 className="mt-3 font-display text-3xl font-bold leading-tight">{pick(open.title, lang)}</h2>
                 <p className="mt-2 text-xs text-stone">
                   {t.posters.created}: {formatDate(open.createdAt, lang)} · {open.downloads} {t.posters.downloads}
                 </p>
               </div>
               <PosterActions id={open.id} title={pick(open.title, lang)} />
-              <Link href={`/posters/${open.id}`} className="text-sm font-bold underline decoration-brand decoration-2 underline-offset-4">
+              <Link href={`/posters/${open.id}`} className="link-line self-start text-sm font-semibold">
                 {t.common.readMore}
               </Link>
             </div>

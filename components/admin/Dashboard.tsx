@@ -25,6 +25,7 @@ const sectionLabel: Record<string, { en: string; te: string; href: string }> = {
   videos: { en: "Videos", te: "వీడియోలు", href: "/admin/videos" },
   updates: { en: "Updates", te: "సమాచారం", href: "/admin/updates" },
   electoral: { en: "Electoral", te: "ఎన్నికలు", href: "/admin/electoral" },
+  focus: { en: "Focus areas", te: "ప్రాధాన్య అంశాలు", href: "/admin/focus" },
 };
 
 function BarChart({ data }: { data: { label: string; value: number; sub?: number }[] }) {
@@ -37,10 +38,10 @@ function BarChart({ data }: { data: { label: string; value: number; sub?: number
         const y = i * rowH + 4;
         return (
           <g key={d.label}>
-            <text x="0" y={y + 19} fontSize="13" fontWeight="700" fill="#171717">{d.label}</text>
+            <text x="0" y={y + 19} fontSize="13" fontWeight="700" fill="#080808">{d.label}</text>
             <rect x="140" y={y + 4} width="340" height="18" rx="9" fill="#efeadb" />
-            <rect x="140" y={y + 4} width={Math.max(w, d.value ? 12 : 0)} height="18" rx="9" fill="#f5d51c" stroke="#171717" strokeWidth="2" />
-            <text x="490" y={y + 19} fontSize="13" fontWeight="800" fill="#171717">{d.value}</text>
+            <rect x="140" y={y + 4} width={Math.max(w, d.value ? 12 : 0)} height="18" rx="9" fill="#ffd600" stroke="#080808" strokeWidth="2" />
+            <text x="490" y={y + 19} fontSize="13" fontWeight="800" fill="#080808">{d.value}</text>
           </g>
         );
       })}
@@ -72,7 +73,7 @@ export function Dashboard() {
           { icon: FileImage, label: t.admin.posters, value: stats.counts.posters?.total ?? 0 },
           { icon: Download, label: t.posters.downloads, value: stats.totalDownloads },
         ].map(({ icon: Icon, label, value }) => (
-          <div key={label} className="rounded-2xl border-2 border-ink bg-white p-5 shadow-[5px_5px_0_0_#f5d51c]">
+          <div key={label} className="rounded-2xl border-2 border-ink bg-white p-5 shadow-[5px_5px_0_0_#ffd600]">
             <Icon className="mb-3 h-5 w-5" />
             <p className="font-display text-5xl leading-none">{value}</p>
             <p className="mt-1 text-sm font-bold text-stone">{label}</p>

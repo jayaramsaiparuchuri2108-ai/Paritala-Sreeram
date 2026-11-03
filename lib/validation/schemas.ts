@@ -42,7 +42,14 @@ export const collectionSchemas = {
     key: text(40).min(1),
     title: biRequired(200),
     body: biRequired(6000),
+    image: optionalAsset,
+    imageAlt: biSchema(300).optional(),
     sourceIds,
+  }),
+  focus: z.object({
+    ...common,
+    title: biRequired(120),
+    description: biSchema(600),
   }),
   electoral: z.object({
     ...common,
@@ -58,6 +65,8 @@ export const collectionSchemas = {
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}/),
     title: biRequired(200),
     body: biSchema(1500),
+    image: optionalAsset,
+    imageAlt: biSchema(300).optional(),
     sourceName: text(120).optional(),
     sourceUrl: optionalHttps,
   }),

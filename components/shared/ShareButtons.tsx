@@ -31,7 +31,7 @@ export function ShareButtons({ path, title, compact }: Props) {
   const fullUrl = () => `${window.location.origin}${path}`;
   const open = (href: string) => window.open(href, "_blank", "noopener,noreferrer");
 
-  const base = "inline-flex items-center gap-2 rounded-full border-2 border-ink px-4 py-2 text-sm font-bold transition-colors hover:bg-ink hover:text-brand";
+  const base = "inline-flex items-center gap-2 border border-ink px-4 py-2 text-[13px] font-semibold transition-colors hover:bg-ink hover:text-brand";
 
   async function nativeShare() {
     try {
@@ -54,7 +54,7 @@ export function ShareButtons({ path, title, compact }: Props) {
     <div className="flex flex-wrap gap-2">
       <button
         type="button"
-        className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-sm font-bold text-ink transition-transform hover:scale-[1.03]"
+        className="inline-flex items-center gap-2 bg-[#25D366] px-4 py-2 text-[13px] font-semibold text-ink transition-opacity hover:opacity-85"
         onClick={() => open(`https://wa.me/?text=${encodeURIComponent(`${title} ${fullUrl()}`)}`)}
       >
         <WhatsAppIcon /> {compact ? "WhatsApp" : t.common.shareWhatsapp}

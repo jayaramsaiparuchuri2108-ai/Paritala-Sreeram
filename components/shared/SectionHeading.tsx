@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { Reveal } from "@/components/animations/Reveal";
 
 interface Props {
@@ -9,28 +9,29 @@ interface Props {
   href?: string;
   linkLabel?: string;
   align?: "left" | "center";
+  /** Shorthand for tone="dark". */
   dark?: boolean;
+  /** Surface the heading sits on: light (white / off-white), dark (black) or brand (yellow). */
+  tone?: "light" | "dark" | "brand";
 }
 
-export function SectionHeading({ eyebrow, title, lead, href, linkLabel, align = "left", dark }: Props) {
+export function SectionHeading({ eyebrow, title, lead, href, linkLabel, align = "left", dark, tone }: Props) {
+  const surface = tone ?? (dark ? "dark" : "light");
+  const eyebrowColor = surface === "dark" ? "text-brand" : "text-ink";
+  const titleColor = surface === "dark" ? "text-white" : "text-ink";
+  const leadColor = surface === "dark" ? "text-white/65" : surface === "brand" ? "text-ink/75" : "text-stone";
+  const linkColor = surface === "dark" ? "text-brand" : "text-ink";
   return (
-    <Reveal className={`mb-10 flex flex-col gap-4 md:mb-14 ${align === "center" ? "items-center text-center" : "md:flex-row md:items-end md:justify-between"}`}>
-      <div className={align === "center" ? "max-w-2xl" : "max-w-2xl"}>
-        {eyebrow && (
-          <p className={`mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] ${dark ? "text-brand" : "text-ink"}`}>
-            <span className="h-[3px] w-10 bg-brand" /> {eyebrow}
-          </p>
-        )}
-        <h2 className={`font-display text-4xl uppercase leading-[1.05] md:text-6xl ${dark ? "text-white" : "text-ink"}`}>{title}</h2>
-        {lead && <p className={`mt-4 text-base md:text-lg ${dark ? "text-white/70" : "text-stone"}`}>{lead}</p>}
+    <Reveal className={`mb-10 flex flex-col gap-5 md:mb-14 ${align === "center" ? "items-center text-center" : "md:flex-row md:items-end md:justify-between md:gap-10"}`}>
+      <div className="max-w-3xl">
+        {eyebrow && <p className={`eyebrow mb-5 ${eyebrowColor}`}>{eyebrow}</p>}
+        <h2 className={`font-display text-4xl font-bold leading-[1.05] md:text-6xl ${titleColor}`}>{title}</h2>
+        {lead && <p className={`mt-5 max-w-2xl text-base leading-relaxed md:text-lg ${leadColor}`}>{lead}</p>}
       </div>
       {href && linkLabel && (
-        <Link
-          href={href}
-          className={`group inline-flex shrink-0 items-center gap-2 text-sm font-bold ${dark ? "text-brand" : "text-ink"}`}
-        >
-          <span className="border-b-2 border-brand pb-0.5">{linkLabel}</span>
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        <Link href={href} className={`group inline-flex shrink-0 items-center gap-2 text-sm font-semibold ${linkColor}`}>
+          <span className="link-line pb-0.5">{linkLabel}</span>
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
         </Link>
       )}
     </Reveal>

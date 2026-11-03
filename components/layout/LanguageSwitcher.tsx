@@ -15,7 +15,7 @@ export function LanguageSwitcher({ id = "lang", tone = "light" }: { id?: string;
     <div
       role="group"
       aria-label={t.nav.language}
-      className={`relative inline-flex rounded-full border-2 p-0.5 ${tone === "dark" ? "border-white/40" : "border-ink"}`}
+      className={`relative inline-flex border p-0.5 ${tone === "dark" ? "border-white/40" : "border-ink/60"}`}
     >
       {options.map((o) => {
         const active = lang === o.code;
@@ -27,14 +27,14 @@ export function LanguageSwitcher({ id = "lang", tone = "light" }: { id?: string;
             aria-pressed={active}
             aria-label={o.aria}
             lang={o.code}
-            className={`relative z-10 min-w-[2.6rem] rounded-full px-3 py-1 text-sm font-bold transition-colors ${
-              active ? "text-ink" : tone === "dark" ? "text-white" : "text-ink/70 hover:text-ink"
+            className={`relative z-10 min-w-[2.25rem] px-2.5 py-1 text-[12px] font-bold transition-colors ${
+              active ? (tone === "dark" ? "text-ink" : "text-brand") : tone === "dark" ? "text-white" : "text-ink/70 hover:text-ink"
             }`}
           >
             {active && (
               <motion.span
                 layoutId={`${id}-pill`}
-                className="absolute inset-0 -z-10 rounded-full bg-brand"
+                className={`absolute inset-0 -z-10 ${tone === "dark" ? "bg-brand" : "bg-ink"}`}
                 transition={{ type: "spring", stiffness: 420, damping: 34 }}
               />
             )}

@@ -40,9 +40,9 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
               setCategory(c);
               setCount(PAGE);
             }}
-            className="relative rounded-full border-2 border-ink px-4 py-2 text-sm font-bold"
+            className={`relative border border-ink px-4 py-2 text-[13px] font-semibold transition-colors ${category === c ? "text-brand" : "hover:bg-ink/5"}`}
           >
-            {category === c && <motion.span layoutId="photo-chip" className="absolute inset-0 -z-10 rounded-full bg-brand" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
+            {category === c && <motion.span layoutId="photo-chip" className="absolute inset-0 -z-10 bg-ink" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
             <span className="relative">{c === "all" ? t.common.all : label(c)}</span>
           </button>
         ))}
@@ -60,11 +60,11 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
               transition={{ duration: 0.45, delay: (i % PAGE) * 0.04 }}
               className="mb-4 break-inside-avoid lg:mb-6"
             >
-              <button type="button" onClick={() => setActive(i)} className="zoom-img group relative block w-full overflow-hidden rounded-xl border-2 border-ink text-left">
+              <button type="button" onClick={() => setActive(i)} className="zoom-img group relative block w-full overflow-hidden bg-ink text-left">
                 <div className={`relative w-full ${ratios[i % ratios.length]}`}>
                   <Image src={p.image} alt={pick(p.alt, lang)} fill loading="lazy" sizes="(max-width: 768px) 50vw, 33vw" className="object-cover" />
                 </div>
-                <span className="absolute inset-x-0 bottom-0 translate-y-full bg-ink/85 p-3 text-sm font-bold text-white transition-transform duration-300 group-hover:translate-y-0">
+                <span className="absolute inset-x-0 bottom-0 translate-y-full border-t-2 border-brand bg-ink/90 p-3 font-display text-sm font-semibold text-white transition-transform duration-300 group-hover:translate-y-0">
                   {pick(p.title, lang)}
                 </span>
               </button>
@@ -76,7 +76,7 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
       {filtered.length === 0 && <EmptyState>{t.common.noResults}</EmptyState>}
       {count < filtered.length && (
         <div className="mt-10 text-center">
-          <button onClick={() => setCount((c) => c + PAGE)} className="rounded-full bg-ink px-8 py-3 font-bold text-brand transition-transform hover:scale-105">
+          <button onClick={() => setCount((c) => c + PAGE)} className="bg-ink px-8 py-3.5 text-[13px] font-bold uppercase tracking-[0.14em] text-brand transition-colors hover:bg-brand hover:text-ink hover:outline hover:outline-1 hover:outline-ink">
             {t.common.loadMore}
           </button>
         </div>
@@ -93,10 +93,10 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
           <figure className="flex flex-col">
             <div className="relative flex items-center justify-center bg-ink">
               <Image src={current.image} alt={pick(current.alt, lang)} width={1600} height={1600} sizes="100vw" className="h-auto max-h-[75vh] w-auto max-w-full object-contain" />
-              <button onClick={() => setActive((a) => (a === null ? a : (a - 1 + filtered.length) % filtered.length))} aria-label={t.common.previous} className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-brand">
+              <button onClick={() => setActive((a) => (a === null ? a : (a - 1 + filtered.length) % filtered.length))} aria-label={t.common.previous} className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand">
                 <ChevronLeft />
               </button>
-              <button onClick={() => setActive((a) => (a === null ? a : (a + 1) % filtered.length))} aria-label={t.common.next} className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-brand">
+              <button onClick={() => setActive((a) => (a === null ? a : (a + 1) % filtered.length))} aria-label={t.common.next} className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center bg-brand">
                 <ChevronRight />
               </button>
             </div>

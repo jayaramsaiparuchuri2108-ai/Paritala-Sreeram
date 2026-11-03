@@ -40,7 +40,7 @@ export function LoginForm() {
 
   return (
     <main className="grid min-h-screen place-items-center bg-brand p-4">
-      <div className="w-full max-w-md rounded-3xl border-[3px] border-ink bg-white p-8 shadow-[12px_12px_0_0_#171717]">
+      <div className="w-full max-w-md rounded-3xl border-[3px] border-ink bg-white p-8 shadow-[12px_12px_0_0_#080808]">
         <div className="mb-6 flex items-center justify-between">
           <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-full bg-white ring-2 ring-ink">
             <Image src="/logos/tdp-logo.png" alt="" width={56} height={56} className="h-full w-full object-contain" />

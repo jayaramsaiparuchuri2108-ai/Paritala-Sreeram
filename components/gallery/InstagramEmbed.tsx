@@ -99,11 +99,11 @@ export function InstagramEmbed({ url }: { url: string }) {
   }, [url]);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border-2 border-ink bg-white">
+    <div className="relative overflow-hidden bg-white">
       <div ref={host} className={state === "unavailable" ? "hidden" : ""} />
       {(state === "idle" || state === "loading") && (
         <div aria-busy className="skeleton absolute inset-0 grid place-items-center">
-          <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-bold">{t.common.loading}</span>
+          <span className="bg-white/80 px-3 py-1 text-xs font-semibold">{t.common.loading}</span>
         </div>
       )}
       {(state === "idle" || state === "loading") && <div className="aspect-[4/5]" aria-hidden />}
@@ -111,7 +111,7 @@ export function InstagramEmbed({ url }: { url: string }) {
         <div className="flex aspect-[4/5] flex-col items-center justify-center gap-4 bg-cream p-6 text-center">
           <ImageOff className="h-8 w-8 text-stone" />
           <p className="text-sm text-stone">{t.common.unavailable}</p>
-          <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-bold text-brand">
+          <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-ink px-4 py-2 text-sm font-semibold text-brand">
             {t.common.openOnInstagram} <ExternalLink className="h-4 w-4" />
           </a>
         </div>
