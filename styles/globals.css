@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #f5d51c;
+  --color-brand-deep: #d9b900;
+  --color-brand-soft: #fdf3b0;
+  --color-ink: #171717;
+  --color-ink-soft: #2a2a2a;
+  --color-paper: #ffffff;
+  --color-cream: #fbf7e6;
+  --color-stone: #6b6b6b;
+  --color-mist: #efeadb;
+  --color-line: #e4dec6;
+
+  --font-sans: "Inter Variable", "Noto Sans Telugu", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Anton", "Noto Sans Telugu", Impact, "Arial Narrow", sans-serif;
+  --font-serif: "Playfair Display", "Noto Serif Telugu", Georgia, serif;
+
+  --animate-float: float 9s ease-in-out infinite;
+  --animate-drift: drift 22s linear infinite;
+  --animate-pulse-ring: pulse-ring 2.6s ease-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -18px, 0); }
+  }
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) rotate(0deg); }
+    to { transform: translate3d(0, 0, 0) rotate(360deg); }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.55; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Telugu typography: more generous line height, no letter-spacing/uppercase, Telugu display weight */
+:lang(te) body,
+html[lang="te"] body {
+  font-family: "Noto Sans Telugu", "Inter Variable", sans-serif;
+  line-height: 1.8;
+}
+html[lang="te"] .font-display {
+  font-family: "Noto Sans Telugu", sans-serif;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+html[lang="te"] .tracking-wide,
+html[lang="te"] .tracking-wider,
+html[lang="te"] .tracking-widest,
+html[lang="te"] .tracking-tight {
+  letter-spacing: 0;
+}
+html[lang="te"] .uppercase {
+  text-transform: none;
+}
+html[lang="te"] .font-serif {
+  font-family: "Noto Serif Telugu", serif;
+}
+
+::selection {
+  background: var(--color-brand);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.container-x {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 768px) {
+  .container-x { padding-inline: 2rem; }
+}
+
+.stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-ink) 0 6px,
+    transparent 6px 18px
+  );
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-mist) 25%, #f6f2e2 50%, var(--color-mist) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* GPU-friendly hover zoom for images */
+.zoom-img img {
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+.zoom-img:hover img {
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .zoom-img:hover img { transform: none; }
+}

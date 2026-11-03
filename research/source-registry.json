@@ -1,0 +1,188 @@
+{
+  "meta": {
+    "subject": "Paritala Sreeram (పరిటాల శ్రీరామ్)",
+    "compiledOn": "2026-11-03",
+    "note": "Machine-readable companion to research-report.md. 'status' values: verified (primary or 2+ independent sources), secondary (one reputable secondary source), self-published (subject's own channel), unverified (could not be confirmed - do not publish)."
+  },
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Paritala Sreeram - Raptadu 2019 candidate affidavit",
+      "publisher": "MyNeta (Association for Democratic Reforms)",
+      "url": "https://www.myneta.info/AndhraPradesh2019/candidate.php?candidate_id=5032",
+      "published": "2019 (affidavit archive)",
+      "accessed": "2026-11-03",
+      "type": "election-affidavit-archive"
+    },
+    {
+      "id": "S02",
+      "title": "Raptadu Assembly constituency",
+      "publisher": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Raptadu_Assembly_constituency",
+      "published": "continuously edited",
+      "accessed": "2026-11-03",
+      "type": "secondary-encyclopedia"
+    },
+    {
+      "id": "S03",
+      "title": "Raptadu, Vidhan Sabha 2019 results",
+      "publisher": "IndiaVotes",
+      "url": "https://www.indiavotes.com/vidhan-sabha-details/2019/andhra-pradesh-[2014-onwards]/raptadu/62/43636/272",
+      "published": "n/a",
+      "accessed": "2026-11-03",
+      "type": "election-data-aggregator"
+    },
+    {
+      "id": "S04",
+      "title": "TDP's Paritala Sriram To Contest As Nallacheruvu ZPTC Chairman",
+      "publisher": "Deccan Chronicle",
+      "url": "https://www.deccanchronicle.com/southern-states/andhra-pradesh/kadiri-tdps-paritala-sriram-to-contest-as-nallacheruvu-zptc-chairman-1998140",
+      "published": "2026-10-23",
+      "accessed": "2026-11-03",
+      "type": "news"
+    },
+    {
+      "id": "S05",
+      "title": "Paritala Sreeram Enters Fray for Nallacheruvu ZPTC Seat As TD Nominee",
+      "publisher": "Deccan Chronicle",
+      "url": "https://www.deccanchronicle.com/southern-states/andhra-pradesh/paritala-sreeram-enters-fray-for-nallacheruvu-zptc-seat-as-td-nominee-1998264",
+      "published": "2026-10-23",
+      "accessed": "2026-11-03",
+      "type": "news"
+    },
+    {
+      "id": "S06",
+      "title": "ZPTC బరిలో పరిటాల శ్రీరాం : నల్లచెరువుకు నామినేషన్",
+      "publisher": "V6 Velugu",
+      "url": "https://www.v6velugu.com/paritala-sriram-files-nomination-as-tdp-zptc-candidate-from-nallacheruvu",
+      "published": "2026-10-23",
+      "accessed": "2026-11-03",
+      "type": "news"
+    },
+    {
+      "id": "S07",
+      "title": "Paritala Sriram Enters ZPTC Poll Fray",
+      "publisher": "Gulte",
+      "url": "https://www.gulte.com/shorts/437669/paritala-sriram-enters-zptc-poll-fray/amp",
+      "published": "2026-10-23",
+      "accessed": "2026-11-03",
+      "type": "news"
+    },
+    {
+      "id": "S08",
+      "title": "AP SEC Reschedules MPTC, ZPTC Polls To November 5",
+      "publisher": "Deccan Chronicle",
+      "url": "https://www.deccanchronicle.com/southern-states/andhra-pradesh/ap-sec-reschedules-mptc-zptc-polls-to-november-5-1999650",
+      "published": "2026-10-28",
+      "accessed": "2026-11-03",
+      "type": "news"
+    },
+    {
+      "id": "S09",
+      "title": "No Ticket, But Paritala Sriram's Matured Talk",
+      "publisher": "Gulte",
+      "url": "https://www.gulte.com/political-news/286175/no-ticket-but-paritala-srirams-matured-talk",
+      "published": "2024-03-31",
+      "accessed": "2026-11-03",
+      "type": "news"
+    },
+    {
+      "id": "S10",
+      "title": "Paritala Sunitha",
+      "publisher": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Paritala_Sunitha",
+      "published": "continuously edited",
+      "accessed": "2026-11-03",
+      "type": "secondary-encyclopedia",
+      "note": "Cites Times of India (14 Mar 2019) for Sunitha giving up Raptadu for her son, and ap7am (29 Mar 2019) for her three children."
+    },
+    {
+      "id": "S11",
+      "title": "Paritala Ravindra",
+      "publisher": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Paritala_Ravindra",
+      "published": "continuously edited",
+      "accessed": "2026-11-03",
+      "type": "secondary-encyclopedia",
+      "note": "Assassination of 24 January 2005 is cited there to The Hindu. Birth date and offices are uncited on that page and are NOT used on the website."
+    },
+    {
+      "id": "S12",
+      "title": "Official Instagram profile @paritalasreeramofficial",
+      "publisher": "Instagram (subject's own account)",
+      "url": "https://www.instagram.com/paritalasreeramofficial/",
+      "published": "live profile",
+      "accessed": "2026-11-03",
+      "type": "official-social-media"
+    },
+    {
+      "id": "S13",
+      "title": "Official Telegram channel iParitalaSriram",
+      "publisher": "Telegram (subject's own channel)",
+      "url": "https://t.me/iParitalaSriram",
+      "published": "live channel",
+      "accessed": "2026-11-03",
+      "type": "official-social-media",
+      "note": "Page could not be fetched during research (connection reset); link supplied by the site owner."
+    },
+    {
+      "id": "S14",
+      "title": "TDP party logos",
+      "publisher": "Telugu Desam Party (official website)",
+      "url": "https://www.telugudesam.org/party-logos/",
+      "published": "n/a",
+      "accessed": "2026-11-03",
+      "type": "official-party-website",
+      "note": "Logo downloaded from https://www.telugudesam.org/wp-content/uploads/2022/06/TDP-Logo.zip. The page publishes no usage terms."
+    },
+    {
+      "id": "S15",
+      "title": "Paritala Sriram Meet At Chicago",
+      "publisher": "Telugu360",
+      "url": "https://www.telugu360.com/paritala-sriram-meet-at-chicago/",
+      "published": "2023-07-04",
+      "accessed": "2026-11-03",
+      "type": "news-photo-gallery",
+      "note": "Photo gallery only; no text describing the event. Not used on the website."
+    },
+    {
+      "id": "S16",
+      "title": "AP State Election Commission",
+      "publisher": "Andhra Pradesh State Election Commission",
+      "url": "https://sec.ap.gov.in",
+      "published": "n/a",
+      "accessed": "2026-11-03",
+      "type": "official-election-commission",
+      "note": "Homepage fetched but no schedule or notification content could be read. Official confirmation of the 2026 schedule is therefore still PENDING."
+    }
+  ],
+  "facts": [
+    { "id": "F01", "claim": "Name is Paritala Sreeram (also spelled Sriram in the press); Telugu: పరిటాల శ్రీరామ్.", "sources": ["S01", "S04", "S12"], "status": "verified", "section": "Home, About" },
+    { "id": "F02", "claim": "Son of the late Paritala Ravindra and Paritala Sunitha; described by himself as the elder son.", "sources": ["S01", "S05", "S10", "S12"], "status": "verified", "section": "About - Family" },
+    { "id": "F03", "claim": "Paritala Ravindra was a Telugu Desam Party leader who was assassinated on 24 January 2005.", "sources": ["S05", "S11"], "status": "secondary", "section": "About - Family" },
+    { "id": "F04", "claim": "Paritala Sunitha is a former minister (2014-2019, Chandrababu Naidu cabinet) and MLA for Raptadu (2009, 2014, 2024).", "sources": ["S02", "S10"], "status": "secondary", "section": "About - Family" },
+    { "id": "F05", "claim": "Education: graduate, with a diploma in international business from MDIS (graduated August 2009).", "sources": ["S01"], "status": "verified", "section": "About - Education" },
+    { "id": "F06", "claim": "Declared profession in the 2019 affidavit: business and agriculture.", "sources": ["S01"], "status": "verified", "section": "About - Personal background" },
+    { "id": "F07", "claim": "2019: contested Raptadu as the TDP candidate after his mother stepped aside; finished second with 85,626 votes; Thopudurthi Prakash Reddy (YSRCP) won with 111,201; margin 25,575.", "sources": ["S02", "S03", "S10"], "status": "verified", "section": "About - Electoral history", "note": "Vote counts agree across two aggregators. Percentages differ (42.35% vs 42.73%) so they are not published. Official ECI Form 20 not directly opened." },
+    { "id": "F08", "claim": "2024: the Dharmavaram seat was allotted to the BJP under the alliance; BJP's Satya Kumar Yadav won it. Sreeram did not contest in 2024.", "sources": ["S02", "S04", "S05", "S09"], "status": "verified", "section": "About - Electoral history" },
+    { "id": "F09", "claim": "After the 2024 allotment he said he would keep working with TDP cadres in Dharmavaram (paraphrased; no direct quote used).", "sources": ["S09"], "status": "secondary", "section": "About - Political journey" },
+    { "id": "F10", "claim": "Current designation: Telugu Desam Party in-charge for Dharmavaram.", "sources": ["S04", "S05", "S12"], "status": "verified", "section": "Home, About" },
+    { "id": "F11", "claim": "Chairman, Paritala Ravindra Memorial Trust.", "sources": ["S12"], "status": "self-published", "section": "About - Roles", "note": "Taken from his own Instagram bio only. No independent source or trust programme coverage found. Labelled 'per official Instagram profile' on the site." },
+    { "id": "F12", "claim": "23 October 2026: filed nomination for the Nallacheruvu ZPTC seat (Kadiri constituency, Sri Sathya Sai district) at the Zilla Parishad office in Kothacheruvu, with Kadiri MLA Kandikunta Venkata Prasad and TDP district president M.S. Raju.", "sources": ["S04", "S05", "S06", "S07"], "status": "verified", "section": "Home - Latest updates, About - Timeline" },
+    { "id": "F13", "claim": "Press reports describe him as the TDP's expected candidate for Sri Sathya Sai Zilla Parishad chairperson if he wins the ZPTC seat.", "sources": ["S04", "S05", "S06"], "status": "secondary", "section": "Home - Latest updates", "note": "Reported as expectation, not as an official party announcement." },
+    { "id": "F14", "claim": "Revised local-body schedule: MPTC/ZPTC polling on 5 November 2026, counting on 7 November 2026 (moved from 3 November).", "sources": ["S08"], "status": "secondary", "section": "Home - Latest updates", "note": "Official SEC confirmation pending (S16). Earlier reports gave 1/3 Nov for polling - superseded." },
+    { "id": "F15", "claim": "RESULT of the Nallacheruvu ZPTC contest: none available as of 2026-11-03. The website must describe him as a candidate only.", "sources": ["S08"], "status": "unverified", "section": "Do not publish a result until the SEC/press confirms it" },
+    { "id": "F16", "claim": "2019 affidavit declared one pending criminal case (Crime No. 57/2018, Ramagiri PS) with no conviction, assets ~Rs 19.03 crore and liabilities ~Rs 3 crore.", "sources": ["S01"], "status": "verified", "section": "Research record only - NOT displayed on the website; linked via the source registry", "note": "Owner decision required on whether to present affidavit details; they are a self-declared snapshot from 2019." },
+    { "id": "F17", "claim": "Paritala Sreeram's wedding/engagement (2017) was reported by Telugu360. His spouse is a private individual.", "sources": [], "status": "unverified", "section": "Omitted for privacy" },
+    { "id": "F18", "claim": "Birth date: not reliably published (affidavit age 28 in 2019 only).", "sources": ["S01"], "status": "unverified", "section": "Omitted" },
+    { "id": "F19", "claim": "Public video interviews/speeches: none verified with an authorised embed source during research.", "sources": [], "status": "unverified", "section": "Videos page starts empty; admin adds authorised links" },
+    { "id": "F20", "claim": "Authorised portrait/event photographs: none obtained. Instagram embeds of his own public posts are used instead.", "sources": ["S12"], "status": "verified", "section": "Gallery, Home" }
+  ],
+  "instagramSeedPosts": [
+    { "url": "https://www.instagram.com/paritalasreeramofficial/reel/DYud-a9Nx-7/", "note": "Reel, listed on profile grid 2026-11-03", "embedEndpointStatus": 200 },
+    { "url": "https://www.instagram.com/paritalasreeramofficial/reel/DWtAQVxkWVz/", "note": "Reel", "embedEndpointStatus": 200 },
+    { "url": "https://www.instagram.com/paritalasreeramofficial/reel/DU8bJxlki9W/", "note": "Reel", "embedEndpointStatus": 200 },
+    { "url": "https://www.instagram.com/paritalasreeramofficial/p/DfPsAk6Eyrj/", "note": "Post", "embedEndpointStatus": 200 },
+    { "url": "https://www.instagram.com/paritalasreeramofficial/p/DfPNB9bmnBp/", "note": "Post", "embedEndpointStatus": 200 }
+  ]
+}
